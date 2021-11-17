@@ -1,2 +1,1 @@
-## Hi
-Repository for RavenClaw Robotics 11472
+## Aarush is bad
