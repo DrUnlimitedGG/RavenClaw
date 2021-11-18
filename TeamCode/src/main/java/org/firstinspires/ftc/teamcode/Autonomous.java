@@ -47,7 +47,7 @@ public class Autonomous extends LinearOpMode {
         LF.setPower(0);
         LB.setPower(0);
         RF.setPower(0);
-        RB.setPower(0);
+        RB.setPower();
     }
 
     public void driveForward(double distance, double speed) {
