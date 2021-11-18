@@ -70,4 +70,8 @@ public class Autonomous extends LinearOpMode {
     }
 
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 6a69fe5795afb9f6b7e82f454114e7ba2e4ad6ee
