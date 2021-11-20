@@ -1,30 +1,43 @@
 
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "MecanumDrive")
 public class MecanumDrive extends OpMode {
 
-    public DcMotorEx RF = hardwareMap.get(DcMotorEx.class, "right_front");
-    public DcMotorEx LF = hardwareMap.get(DcMotorEx.class, "left_front");
-    public DcMotorEx RB = hardwareMap.get(DcMotorEx.class, "right_back");
-    public DcMotorEx LB = hardwareMap.get(DcMotorEx.class, "left_back");
+    public DcMotorEx right_front;
+    public DcMotorEx left_front;
+    public DcMotorEx right_back;
+    public DcMotorEx left_back;
+    public DcMotorEx carousel;
+    //public Servo carousel;
+
+    private ElapsedTime runtime;
+
 
     @Override
     public void init() {
-        telemetry.addData("Status", "Initialized");
+            telemetry.addData("Status", "Initialized");
+
+            right_front = hardwareMap.get(DcMotorEx.class, "right_front");
+            left_front = hardwareMap.get(DcMotorEx.class, "left_front");
+            right_back = hardwareMap.get(DcMotorEx.class, "right_back");
+            left_back = hardwareMap.get(DcMotorEx.class, "left_back");
+            //carousel = hardwareMap.get(DcMotorEx.class, "carousel");
+
+            right_front.setDirection(DcMotorEx.Direction.REVERSE);
+            right_back.setDirection(DcMotorEx.Direction.REVERSE);
+            left_front.setDirection(DcMotorEx.Direction.FORWARD);
+            left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
 
 
-        RF.setDirection(DcMotorEx.Direction.REVERSE);
-        RB.setDirection(DcMotorEx.Direction.REVERSE);
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
 
     }
 
@@ -40,6 +53,11 @@ public class MecanumDrive extends OpMode {
      */
     @Override
     public void start() {
+        telemetry.addData("Status", "More dog than a golden retriever");
+        telemetry.addData("Status", "More free than a costco sample");
+        telemetry.update();
+
+        runtime.reset();
     }
 
     /*
@@ -51,10 +69,25 @@ public class MecanumDrive extends OpMode {
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
 
-        LF.setPower(ly + lx + rx);
-        LB.setPower(ly - lx + rx);
-        RF.setPower(ly - lx - rx);
-        RB.setPower(ly + lx - rx);
+        telemetry.addData("LX: ", lx);
+        telemetry.addData("LY: ", ly);
+        telemetry.addData("RX: ", rx);
+        telemetry.update();
+
+        left_front.setPower(ly + lx + rx);
+        left_back.setPower(ly - lx + rx);
+        right_front.setPower(ly - lx - rx);
+        right_back.setPower(ly + lx - rx);
+
+        telemetry.addData("Left Front: ", ly + lx + rx);
+        telemetry.addData("Left Back: ", ly - lx + rx);
+        telemetry.addData("Right Front: ", ly - lx - rx);
+        telemetry.addData("Right Back: ", ly + lx - rx);
+        telemetry.addData("Runtime: ", runtime.toString());
+        telemetry.update();
+
+
+
 
     }
 
