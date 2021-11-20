@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+
 
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
@@ -43,11 +43,22 @@ public class Autonomous extends LinearOpMode {
             driveForward(12, 0.25);
         }
     }
+
     public void quitDriving() {
         LF.setPower(0);
         LB.setPower(0);
         RF.setPower(0);
         RB.setPower(0);
+
+        LF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        LB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
 
     public void driveForward(double distance, double speed) {
@@ -69,9 +80,24 @@ public class Autonomous extends LinearOpMode {
 
     }
 
+    public void driveBack(double distance, double speed) {
+        LF.setTargetPosition((int) (-1 * (distance * encoderConstant)));
+        LB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
+        RF.setTargetPosition((int) (-1 * (distance * encoderConstant)));
+        RB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
 
-<<<<<<< HEAD
+        LF.setPower(speed);
+        LB.setPower(speed);
+        RF.setPower(speed);
+        RB.setPower(speed);
+
+        while (LF.isBusy() && LB.isBusy() && RF.isBusy() && RB.isBusy()) {
+
+        }
+
+        quitDriving();
+    }
+
+
 }
-=======
-}
->>>>>>> 6a69fe5795afb9f6b7e82f454114e7ba2e4ad6ee
+
