@@ -30,15 +30,10 @@ public class Autonomous extends LinearOpMode {
         RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
         waitForStart();
 
         while (opModeIsActive()) {
-            driveForward(12, 0.25);
+
         }
     }
 
@@ -53,10 +48,7 @@ public class Autonomous extends LinearOpMode {
         RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
     }
 
     public void driveForward(double distance, double speed) {
@@ -64,6 +56,11 @@ public class Autonomous extends LinearOpMode {
         LB.setTargetPosition((int) (distance * encoderConstant));
         RF.setTargetPosition((int) (distance * encoderConstant));
         RB.setTargetPosition((int) (distance * encoderConstant));
+
+        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         LF.setPower(speed);
         LB.setPower(speed);
@@ -83,6 +80,11 @@ public class Autonomous extends LinearOpMode {
         LB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
         RF.setTargetPosition((int) (-1 * (distance * encoderConstant)));
         RB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
+
+        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         LF.setPower(speed);
         LB.setPower(speed);
