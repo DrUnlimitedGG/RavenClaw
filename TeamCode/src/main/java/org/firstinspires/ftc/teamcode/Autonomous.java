@@ -11,7 +11,7 @@ public class Autonomous extends LinearOpMode {
     private DcMotorEx RF = null;
     private DcMotorEx RB = null;
 
-    private final double encoderConstant = 45;
+    private final double encoderConstant = 45.2847909695;
 
     public void runOpMode() {
         LF = hardwareMap.get(DcMotorEx.class, "left_front");
