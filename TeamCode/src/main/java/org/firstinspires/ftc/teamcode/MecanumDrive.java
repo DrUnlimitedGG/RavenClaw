@@ -16,7 +16,6 @@ public class MecanumDrive extends OpMode {
     public DcMotorEx right_back;
     public DcMotorEx left_back;
     public DcMotorEx carousel;
-    //public Servo carousel;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -29,7 +28,7 @@ public class MecanumDrive extends OpMode {
             left_front = hardwareMap.get(DcMotorEx.class, "left_front");
             right_back = hardwareMap.get(DcMotorEx.class, "right_back");
             left_back = hardwareMap.get(DcMotorEx.class, "left_back");
-            //carousel = hardwareMap.get(DcMotorEx.class, "carousel");
+            carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
 
             right_front.setDirection(DcMotorEx.Direction.REVERSE);
             right_back.setDirection(DcMotorEx.Direction.REVERSE);
@@ -65,10 +64,9 @@ public class MecanumDrive extends OpMode {
      */
     @Override
     public void loop() {
-        double lx = gamepad2.left_stick_x;
-        double ly = -gamepad2.left_stick_y;
-        double rx = gamepad2.right_stick_x;
-
+        double lx = 1.1*gamepad1.left_stick_x;
+        double ly = -gamepad1.left_stick_y;
+        double rx = gamepad1.right_stick_x;
 
         double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
 
@@ -88,6 +86,14 @@ public class MecanumDrive extends OpMode {
         right_front.setPower(ly - lx - rx);
         right_back.setPower(ly + lx - rx);
         */
+
+        while (gamepad1.dpad_right) {
+            carousel.setPower(0.25);
+        }
+
+        while (gamepad1.dpad_left) {
+            carousel.setPower(0.25);
+        }
 
 
         telemetry.addData("Left Front: ", left_front_power);
