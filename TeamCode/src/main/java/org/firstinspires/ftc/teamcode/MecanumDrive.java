@@ -77,12 +77,12 @@ public class MecanumDrive extends OpMode {
         right_front.setPower(right_front_power / 2);
         right_back.setPower(right_back_power / 2);
 
-        /*telemetry.addData("Left Front: ", left_front_power);
+        telemetry.addData("Left Front: ", left_front_power);
         telemetry.addData("Left Back: ", left_back_power);
         telemetry.addData("Right Front: ", right_front_power);
         telemetry.addData("Right Back: ", right_back_power);
         telemetry.addData("Runtime: ", runtime.toString());
-        telemetry.update(); */
+        telemetry.update();
 
         while (gamepad1.right_bumper == true) {
             carousel.setVelocity(encoderConstant);
