@@ -36,14 +36,7 @@ public class Autonomous extends LinearOpMode {
         RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        waitForStart();
-
-        while (opModeIsActive()) {
-
-        }
-    }
-    
-    public void runOpenCV() throws InterruptedException {
+        
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
@@ -77,7 +70,13 @@ public class Autonomous extends LinearOpMode {
                 // ...
         }
         phoneCam.stopStreaming();
+        
+
+        while (opModeIsActive()) {
+
+        }
     }
+  
     
     public void quitDriving() {
         LF.setPower(0);
