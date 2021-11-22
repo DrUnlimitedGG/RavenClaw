@@ -1,0 +1,8 @@
+1. declare motors, initialize in the hardware map
+2. set right side motors to be reverse
+3. stop and reset the encoders in each motor
+4. set the motor target position
+5. set the motors to run to position
+6. set the power of the motor
+7. loop to run while one of the motors is empty, use idle(); function
+8. set motor power to 0
