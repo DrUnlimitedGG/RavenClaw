@@ -18,22 +18,29 @@ public class MecanumDrive extends OpMode {
     public DcMotorEx carousel;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-    private double encoderConstant = 89.1267682333;
+    //private double encoderConstant = 89.1267682333;
 
     @Override
+    // code to run when driver hits INIT
     public void init() {
-            telemetry.addData("Status", "Initialized");
 
-            right_front = hardwareMap.get(DcMotorEx.class, "right_front");
-            left_front = hardwareMap.get(DcMotorEx.class, "left_front");
-            right_back = hardwareMap.get(DcMotorEx.class, "right_back");
-            left_back = hardwareMap.get(DcMotorEx.class, "left_back");
-            carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
+        right_front = hardwareMap.get(DcMotorEx.class, "right_front");
+        left_front = hardwareMap.get(DcMotorEx.class, "left_front");
+        right_back = hardwareMap.get(DcMotorEx.class, "right_back");
+        left_back = hardwareMap.get(DcMotorEx.class, "left_back");
+        carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
 
-            right_front.setDirection(DcMotorEx.Direction.REVERSE);
-            right_back.setDirection(DcMotorEx.Direction.REVERSE);
-            left_front.setDirection(DcMotorEx.Direction.FORWARD);
-            left_back.setDirection(DcMotorEx.Direction.FORWARD);
+        right_front.setDirection(DcMotorEx.Direction.REVERSE);
+        right_back.setDirection(DcMotorEx.Direction.REVERSE);
+        left_front.setDirection(DcMotorEx.Direction.FORWARD);
+        left_back.setDirection(DcMotorEx.Direction.FORWARD);
+
+
+        telemetry.addData("Connected\n", "Left Front: ", left_front.getPortNumber());
+        telemetry.addData("Right Front: ", right_front.getPortNumber());
+        telemetry.addData("Left Back: ", left_back.getPortNumber());
+        telemetry.addData("Right Front: ", right_front.getPortNumber());
+        telemetry.update();
 
     }
 
@@ -49,11 +56,7 @@ public class MecanumDrive extends OpMode {
      */
     @Override
     public void start() {
-        telemetry.addData("Status", "More dog than a golden retriever");
-        telemetry.addData("Status", "More free than a costco sample");
-        telemetry.update();
 
-        runtime.reset();
     }
 
     /*
@@ -64,10 +67,7 @@ public class MecanumDrive extends OpMode {
         double lx = gamepad1.left_stick_x;
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
-
         double carouselPower = gamepad1.right_trigger;
-
-        boolean macro = gamepad1.a;
 
         double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
 
@@ -76,21 +76,16 @@ public class MecanumDrive extends OpMode {
         double right_front_power = (ly - lx - rx) / denominator;
         double right_back_power = (ly + lx - rx) / denominator;
 
-        left_front.setPower(left_front_power / 2);
-        left_back.setPower(left_back_power / 2);
-        right_front.setPower(right_front_power / 2);
-        right_back.setPower(right_back_power / 2);
+        left_front.setPower(-1 * left_front_power);
+        left_back.setPower(-1 * left_back_power);
+        right_front.setPower(-1 * right_front_power);
+        right_back.setPower(-1 * right_back_power);
 
-        telemetry.addData("Left Front: ", left_front_power);
-        telemetry.addData("Left Back: ", left_back_power);
-        telemetry.addData("Right Front: ", right_front_power);
-        telemetry.addData("Right Back: ", right_back_power);
-        telemetry.addData("Runtime: ", runtime.toString());
-        telemetry.update();
+
 
         carousel.setPower(carouselPower);
 
-        if (macro == true) {
+        if (gamepad1.a == true) {
             right_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             left_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             left_back.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -112,7 +107,23 @@ public class MecanumDrive extends OpMode {
             right_back.setPower(-0.1);
             left_front.setPower(0.1);
             left_back.setPower(0.1);
+
+            while (right_front.isBusy() || right_back.isBusy() || left_front.isBusy() || left_back.isBusy()) {
+            }
+
+            left_front.setPower(0);
+            left_back.setPower(0);
+            right_front.setPower(0);
+            right_back.setPower(0);
+
+            left_front.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            left_back.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            right_front.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            right_back.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
         }
+            telemetry.addData("Runtime: ", runtime.toString());
+            telemetry.update();
     }
 
         /*

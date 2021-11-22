@@ -1,5 +1,3 @@
-// autonomous program that drives bot forward a set distance, stops then
-// backs up to the starting point using encoders to measure the distance.
 
 package org.firstinspires.ftc.teamcode;
 
@@ -30,6 +28,7 @@ public class EncoderTest extends LinearOpMode
         left_front.setDirection(DcMotorEx.Direction.FORWARD);
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
+
         // reset encoder counts kept by motors.
         right_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -39,8 +38,8 @@ public class EncoderTest extends LinearOpMode
         left_front.setTargetPosition(50);
 
         // set motors to run to target encoder position and stop with brakes on.
-        right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right_front.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        left_front.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         telemetry.addData("Mode", "waiting");
         telemetry.update();
