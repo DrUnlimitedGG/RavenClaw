@@ -43,7 +43,7 @@ public class Autonomous extends LinearOpMode {
         }
     }
     
-    public void runOpenCV() throws InterruptedException{
+    public void runOpenCV() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
