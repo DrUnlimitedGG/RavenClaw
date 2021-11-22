@@ -65,6 +65,10 @@ public class MecanumDrive extends OpMode {
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
 
+        double carouselPower = gamepad1.right_trigger;
+
+        boolean macro = gamepad1.a;
+
         double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
 
         double left_front_power = (ly + lx + rx) / denominator;
@@ -84,17 +88,31 @@ public class MecanumDrive extends OpMode {
         telemetry.addData("Runtime: ", runtime.toString());
         telemetry.update();
 
-        while (gamepad1.right_bumper == true) {
-            carousel.setVelocity(encoderConstant);
+        carousel.setPower(carouselPower);
 
-            if (gamepad1.right_bumper == false) {
-                carousel.setPower(0);
-                break;
-            }
+        if (macro == true) {
+            right_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            left_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            left_back.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            right_back.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
+            /*
+            right_front.setTargetPosition(-TK);
+            right_back.setTargetPosition(-TK);
+            left_front.setTargetPosition(TK);
+            left_back.setTargetPosition(TK);
+             */
+
+            right_front.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            right_back.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            left_front.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            left_back.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+            right_front.setPower(-0.1);
+            right_back.setPower(-0.1);
+            left_front.setPower(0.1);
+            left_back.setPower(0.1);
         }
-
-
     }
 
         /*
