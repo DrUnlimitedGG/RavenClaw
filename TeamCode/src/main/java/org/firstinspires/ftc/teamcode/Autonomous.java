@@ -13,7 +13,7 @@ public class Autonomous extends LinearOpMode {
 
     private final double encoderConstant = 45.2847909695;
 
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException{
         LF = hardwareMap.get(DcMotorEx.class, "left_front");
         LB = hardwareMap.get(DcMotorEx.class, "left_back");
         RF = hardwareMap.get(DcMotorEx.class, "right_front");
@@ -36,7 +36,43 @@ public class Autonomous extends LinearOpMode {
 
         }
     }
+    
+    public void runOpenCV() throws InterruptedException{
+        int cameraMonitorViewId = hardwareMap.appContext
+                .getResources().getIdentifier("cameraMonitorViewId",
+                        "id", hardwareMap.appContext.getPackageName());
+        phoneCam = OpenCvCameraFactory.getInstance()
+                .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        DuckDetector detector = new DuckDetector(telemetry);
+        phoneCam.setPipeline(detector);
+        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
 
+            @Override
+            public void onError(int errorCode)
+            {
+
+            }
+        });
+        waitForStart();
+        switch (detector.getLocation()) {
+            case LEFT:
+                // ...
+                break;
+            case RIGHT:
+                // ...
+                break;
+            case NOT_FOUND:
+                // ...
+        }
+        phoneCam.stopStreaming();
+    }
+    
     public void quitDriving() {
         LF.setPower(0);
         LB.setPower(0);
