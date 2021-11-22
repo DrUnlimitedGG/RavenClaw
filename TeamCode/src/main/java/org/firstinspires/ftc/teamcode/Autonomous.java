@@ -3,16 +3,22 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvInternalCamera;
+
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous", group = "Auto")
 public class Autonomous extends LinearOpMode {
 
     private DcMotorEx LF = null;
     private DcMotorEx LB = null;
     private DcMotorEx RF = null;
     private DcMotorEx RB = null;
-
+    private OpenCvCamera phoneCam;
     private final double encoderConstant = 45.2847909695;
-
+    
+    @Override
     public void runOpMode() throws InterruptedException{
         LF = hardwareMap.get(DcMotorEx.class, "left_front");
         LB = hardwareMap.get(DcMotorEx.class, "left_back");
