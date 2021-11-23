@@ -18,7 +18,7 @@ public class MecanumDrive extends OpMode {
     public DcMotorEx carousel;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-    //private double encoderConstant = 89.1267682333;
+    private double encoderConstant = 89.1267682333;
 
     @Override
     // code to run when driver hits INIT
@@ -36,11 +36,7 @@ public class MecanumDrive extends OpMode {
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
 
-        telemetry.addData("Connected\n", "Left Front: ", left_front.getPortNumber());
-        telemetry.addData("Right Front: ", right_front.getPortNumber());
-        telemetry.addData("Left Back: ", left_back.getPortNumber());
-        telemetry.addData("Right Front: ", right_front.getPortNumber());
-        telemetry.update();
+
 
     }
 
@@ -56,7 +52,7 @@ public class MecanumDrive extends OpMode {
      */
     @Override
     public void start() {
-
+        runtime.reset();
     }
 
     /*
@@ -67,23 +63,28 @@ public class MecanumDrive extends OpMode {
         double lx = gamepad1.left_stick_x;
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
-        double carouselPower = gamepad1.right_trigger;
+        double carouselPower;
 
-        double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
+        boolean carousel_button = gamepad1.dpad_up;
 
-        double left_front_power = (ly + lx + rx) / denominator;
-        double left_back_power = (ly - lx + rx) / denominator;
-        double right_front_power = (ly - lx - rx) / denominator;
-        double right_back_power = (ly + lx - rx) / denominator;
+        //max power ow is 0.7 cuz testing adn don't wan to go crazy;  change if neccesary
+        double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 0.7);
 
-        left_front.setPower(-1 * left_front_power);
-        left_back.setPower(-1 * left_back_power);
-        right_front.setPower(-1 * right_front_power);
-        right_back.setPower(-1 * right_back_power);
+        double left_front_power = (ly + lx - rx) / denominator;
+        double left_back_power = (ly - lx - rx) / denominator;
+        double right_front_power = (ly - lx + rx) / denominator;
+        double right_back_power = (ly + lx + rx) / denominator;
 
+        left_front.setPower(left_front_power);
+        left_back.setPower(left_back_power);
+        right_front.setPower(right_front_power);
+        right_back.setPower(right_back_power);
 
-
-        carousel.setPower(carouselPower);
+        carouselPower = 0;
+        if(carousel_button == true){
+            carouselPower = 720;
+        }
+        carousel.setVelocity(carouselPower);
 
         if (gamepad1.a == true) {
             right_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -122,17 +123,16 @@ public class MecanumDrive extends OpMode {
             right_back.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         }
-            telemetry.addData("Runtime: ", runtime.toString());
-            telemetry.update();
+        telemetry.addData("Runtime: ", runtime.toString());
+        telemetry.update();
     }
 
-        /*
-         * Code to run ONCE after the driver hits STOP
-         */
-        @Override
-        public void stop () {
-
-        }
+    /*
+     * Code to run ONCE after the driver hits STOP
+     */
+    @Override
+    public void stop () {
 
     }
 
+}
