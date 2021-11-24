@@ -9,21 +9,28 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "TeleOp  ")
-public class MecanumDrive extends OpMode {
+@TeleOp(name = "Blue_TeleOp")
+public class MecanumDriveBlue extends OpMode {
 
     public DcMotorEx right_front;
     public DcMotorEx left_front;
     public DcMotorEx right_back;
     public DcMotorEx left_back;
     public DcMotorEx carousel;
+    public DcMotorEx cascadingLift;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
 
     public static PIDCoefficients pidCoeffs = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGains = new PIDCoefficients(0, 0, 0);
-    private ElapsedTime PIDTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerLF = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerLB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerRF = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerRB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerCarousel = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerCascade = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
 
     @Override
     // code to run when driver hits INIT
@@ -34,6 +41,7 @@ public class MecanumDrive extends OpMode {
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         left_back = hardwareMap.get(DcMotorEx.class, "left_back");
         carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
+        cascadingLift = hardwareMap.get(DcMotorEx.class, "cascading_lift");
 
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
         right_back.setDirection(DcMotorEx.Direction.REVERSE);
@@ -45,8 +53,7 @@ public class MecanumDrive extends OpMode {
         left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-
+        cascadingLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
     }
@@ -90,20 +97,28 @@ public class MecanumDrive extends OpMode {
         double right_front_power = (ly - lx + rx);
         double right_back_power = (ly + lx + rx);
 
-        PIDLF(left_front_power);
-        PIDLB(left_back_power);
-        PIDRF(right_front_power);
-        PIDRB(right_back_power);
+        left_front.setPower(left_front_power);
+        left_back.setPower(left_back_power);
+        right_front.setPower(right_front_power);
+        right_back.setPower(right_back_power);
 
-        while (gamepad1.dpad_up == true) {
-            carousel.setVelocity(200);
-            if (gamepad1.dpad_up == false) {
+        while (gamepad2.right_bumper == true) {
+            PIDcarousel(200);
+            if (gamepad2.right_bumper == false) {
                 carousel.setPower(0);
                 break;
             }
         }
 
-        if (gamepad1.a == true) {
+        while (gamepad2.left_bumper == true) {
+            PIDcarousel(-200);
+            if (gamepad2.left_bumper == false) {
+                carousel.setPower(0);
+                break;
+            }
+        }
+
+        if (gamepad1.b == true) {
             right_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             left_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             left_back.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -121,12 +136,16 @@ public class MecanumDrive extends OpMode {
             left_front.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             left_back.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-            right_front.setPower(-0.1);
-            right_back.setPower(-0.1);
-            left_front.setPower(0.1);
-            left_back.setPower(0.1);
+            right_front.setVelocity(-200);
+            right_back.setVelocity(-200);
+            left_front.setVelocity(200);
+            left_back.setVelocity(200);
 
             while (right_front.isBusy() || right_back.isBusy() || left_front.isBusy() || left_back.isBusy()) {
+                PIDRF(-200);
+                PIDRB(-200);
+                PIDLF(200);
+                PIDLB(200);
             }
 
             left_front.setPower(0);
@@ -140,6 +159,85 @@ public class MecanumDrive extends OpMode {
             right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         }
+
+        if (gamepad1.dpad_right == true) {
+            left_front.setPower(0);
+            left_back.setPower(0);
+            right_front.setPower(0);
+            right_back.setPower(0);
+
+            boolean xAxisLockLoop = true;
+
+            while (xAxisLockLoop == true) {
+                left_front.setPower(lx);
+                left_back.setPower(-lx);
+                right_front.setPower(-lx);
+                right_back.setPower(lx);
+
+                if (gamepad1.dpad_left == true && gamepad1.dpad_right == false) {
+                    left_front.setPower(0);
+                    left_back.setPower(0);
+                    right_front.setPower(0);
+                    right_back.setPower(0);
+
+                    break;
+                }
+            }
+        }
+
+        if (gamepad1.dpad_up == true) {
+            left_front.setPower(0);
+            left_back.setPower(0);
+            right_front.setPower(0);
+            right_back.setPower(0);
+
+            boolean yAxisLockLoop = true;
+
+            while (yAxisLockLoop == true) {
+                left_front.setPower(ly);
+                left_back.setPower(ly);
+                right_front.setPower(ly);
+                right_back.setPower(ly);
+
+                if (gamepad1.dpad_down == true && gamepad1.dpad_up == false) {
+                    left_front.setPower(0);
+                    left_back.setPower(0);
+                    right_front.setPower(0);
+                    right_back.setPower(0);
+
+                    break;
+                }
+            }
+        }
+
+        if (gamepad2.dpad_up == true) {
+            cascadingLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            cascadingLift.setTargetPosition(30);
+            cascadingLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            cascadingLift.setVelocity(20);
+            while (cascadingLift.isBusy()) {
+                PIDcascade(20);
+            }
+
+            cascadingLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        if (gamepad2.dpad_down == true) {
+            cascadingLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            cascadingLift.setTargetPosition(-30);
+            cascadingLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            cascadingLift.setVelocity(20);
+            while (cascadingLift.isBusy()) {
+                PIDcascade(20);
+            }
+
+            cascadingLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+
+
         telemetry.addData("Runtime: ", runtime.toString());
         telemetry.update();
     }
@@ -148,22 +246,23 @@ public class MecanumDrive extends OpMode {
      * Code to run ONCE after the driver hits STOP
      */
     @Override
-    public void stop () {
+    public void stop() {
 
     }
 
     double integralLF = 0;
     double lastErrorLF = 0;
+
     public void PIDLF(double targetVelocity) {
-        PIDTimer.reset();
+        PIDTimerLF.reset();
         double currentVelocity = left_front.getVelocity();
 
         double error = targetVelocity - currentVelocity;
 
-        integralLF += error * PIDTimer.time();
+        integralLF += error * PIDTimerLF.time();
 
         double deltaError = error - lastErrorLF;
-        double derivative = deltaError / PIDTimer.time();
+        double derivative = deltaError / PIDTimerLF.time();
 
         pidGains.p = pidCoeffs.p * error;
         pidGains.i = pidCoeffs.i * integralLF;
@@ -176,16 +275,17 @@ public class MecanumDrive extends OpMode {
 
     double integralLB = 0;
     double lastErrorLB = 0;
+
     public void PIDLB(double targetVelocity) {
-        PIDTimer.reset();
+        PIDTimerLB.reset();
         double currentVelocity = left_back.getVelocity();
 
         double error = targetVelocity - currentVelocity;
 
-        integralLB += error * PIDTimer.time();
+        integralLB += error * PIDTimerLB.time();
 
         double deltaError = error - lastErrorLB;
-        double derivative = deltaError / PIDTimer.time();
+        double derivative = deltaError / PIDTimerLB.time();
 
         pidGains.p = pidCoeffs.p * error;
         pidGains.i = pidCoeffs.i * integralLB;
@@ -198,16 +298,17 @@ public class MecanumDrive extends OpMode {
 
     double integralRF = 0;
     double lastErrorRF = 0;
+
     public void PIDRF(double targetVelocity) {
-        PIDTimer.reset();
+        PIDTimerRF.reset();
         double currentVelocity = right_front.getPower();
 
         double error = targetVelocity - currentVelocity;
 
-        integralRF += error * PIDTimer.time();
+        integralRF += error * PIDTimerRF.time();
 
         double deltaError = error - lastErrorRF;
-        double derivative = deltaError / PIDTimer.time();
+        double derivative = deltaError / PIDTimerRF.time();
 
         pidGains.p = pidCoeffs.p * error;
         pidGains.i = pidCoeffs.i * integralRF;
@@ -220,16 +321,17 @@ public class MecanumDrive extends OpMode {
 
     double integralRB = 0;
     double lastErrorRB = 0;
+
     public void PIDRB(double targetVelocity) {
-        PIDTimer.reset();
+        PIDTimerRB.reset();
         double currentVelocity = right_back.getVelocity();
 
         double error = targetVelocity - currentVelocity;
 
-        integralRB += error * PIDTimer.time();
+        integralRB += error * PIDTimerRB.time();
 
         double deltaError = error - lastErrorRB;
-        double derivative = deltaError / PIDTimer.time();
+        double derivative = deltaError / PIDTimerRB.time();
 
         pidGains.p = pidCoeffs.p * error;
         pidGains.i = pidCoeffs.i * integralRB;
@@ -239,4 +341,46 @@ public class MecanumDrive extends OpMode {
 
     }
 
+    double integralCarousel = 0;
+    double lastErrorCarousel = 0;
+
+    public void PIDcarousel(double targetVelocity) {
+        PIDTimerCarousel.reset();
+        double currentVelocity = carousel.getVelocity();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralRB += error * PIDTimerCarousel.time();
+
+        double deltaError = error - lastErrorRB;
+        double derivative = deltaError / PIDTimerCarousel.time();
+
+        pidGains.p = pidCoeffs.p * error;
+        pidGains.i = pidCoeffs.i * integralRB;
+        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+
+        carousel.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+    }
+
+    double integralCascade = 0;
+    double lastErrorCascade = 0;
+
+    public void PIDcascade(double targetVelocity) {
+        PIDTimerCascade.reset();
+        double currentVelocity = cascadingLift.getVelocity();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralCascade += error * PIDTimerCascade.time();
+
+        double deltaError = error - lastErrorCascade;
+        double derivative = deltaError / PIDTimerCascade.time();
+
+        pidGains.p = pidCoeffs.p * error;
+        pidGains.i = pidCoeffs.i * integralRB;
+        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+
+        cascadingLift.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+
+    }
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
@@ -9,8 +10,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous", group = "Auto")
-public class Autonomous extends LinearOpMode {
+@Autonomous(name = "Autonomous", group = "Autonomous")
+public class Auto extends LinearOpMode {
 
     private DcMotorEx LF = null;
     private DcMotorEx LB = null;
@@ -35,8 +36,8 @@ public class Autonomous extends LinearOpMode {
         RF.setDirection(DcMotorEx.Direction.REVERSE);
         RB.setDirection(DcMotorEx.Direction.REVERSE);
 
-        carousel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        
+        carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
@@ -70,14 +71,14 @@ public class Autonomous extends LinearOpMode {
                 // ...
         }
         phoneCam.stopStreaming();
-        
+
 
         while (opModeIsActive()) {
 
         }
     }
-  
-    
+
+
     public void quitDriving() {
         LF.setPower(0);
         LB.setPower(0);
@@ -102,10 +103,10 @@ public class Autonomous extends LinearOpMode {
         RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        LF.setPower(speed);
-        LB.setPower(speed);
-        RF.setPower(speed);
-        RB.setPower(speed);
+        LF.setVelocity(speed);
+        LB.setVelocity(speed);
+        RF.setVelocity(speed);
+        RB.setVelocity(speed);
 
         while (LF.isBusy() && LB.isBusy() && RF.isBusy() && RB.isBusy()) {
             idle();
@@ -126,10 +127,10 @@ public class Autonomous extends LinearOpMode {
         RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        LF.setPower(speed);
-        LB.setPower(speed);
-        RF.setPower(speed);
-        RB.setPower(speed);
+        LF.setVelocity(speed);
+        LB.setVelocity(speed);
+        RF.setVelocity(speed);
+        RB.setVelocity(speed);
 
         while (LF.isBusy() && LB.isBusy() && RF.isBusy() && RB.isBusy()) {
             idle();
@@ -154,10 +155,10 @@ public class Autonomous extends LinearOpMode {
         LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        RF.setPower(-1 * speed);
-        RB.setPower(-1 * speed);
-        LF.setPower(speed);
-        LB.setPower(speed);
+        RF.setVelocity(-1 * speed);
+        RB.setVelocity(-1 * speed);
+        LF.setVelocity(speed);
+        LB.setVelocity(speed);
 
         while (RF.isBusy() || RB.isBusy() || LF.isBusy() || LB.isBusy()) {
             idle();
@@ -182,10 +183,10 @@ public class Autonomous extends LinearOpMode {
         LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        RF.setPower(speed);
-        RB.setPower(speed);
-        LF.setPower(-1 * speed);
-        LB.setPower(-1 * speed);
+        RF.setVelocity(speed);
+        RB.setVelocity(speed);
+        LF.setVelocity(-1 * speed);
+        LB.setVelocity(-1 * speed);
 
         while (RF.isBusy() || RB.isBusy() || LF.isBusy() || LB.isBusy()) {
             idle();
@@ -195,9 +196,9 @@ public class Autonomous extends LinearOpMode {
     }
 
     public void carouselSpin(double time) throws InterruptedException {
-        carousel.setPower(0.25);
+        carousel.setVelocity(0.25);
         Thread.sleep((long) (time * 1000));
-        carousel.setPower(0);
+        carousel.setVelocity(0);
     }
 
 
