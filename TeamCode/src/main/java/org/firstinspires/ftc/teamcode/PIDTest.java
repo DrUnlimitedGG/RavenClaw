@@ -46,17 +46,10 @@ public class PIDTest extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            //autonomous code goes here
-            /*
-            valid functions:
-            driveForward(speed, distance);
-            driveBackward(speed, distance);
-            driveLeft(speed, distance);
-            driveRight(speed, distance);
-
-            Distance in inches, can be decimal
-
-            */
+            PID(100, LF);
+            PID(100, LB);
+            PID(100, RF);
+            PID(100, RB);
 
 
         }

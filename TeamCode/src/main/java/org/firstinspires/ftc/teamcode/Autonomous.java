@@ -18,8 +18,9 @@ public class Autonomous extends LinearOpMode {
     private DcMotorEx RB = null;
     private OpenCvCamera phoneCam;
     private DcMotorEx carousel = null;
+
     private final double encoderConstant = 45.2847909695;
-    
+
     @Override
     public void runOpMode() throws InterruptedException{
         LF = hardwareMap.get(DcMotorEx.class, "left_front");

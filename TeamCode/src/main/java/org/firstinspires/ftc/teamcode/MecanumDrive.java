@@ -5,10 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "TeleOp")
+@TeleOp(name = "TeleOp  ")
 public class MecanumDrive extends OpMode {
 
     public DcMotorEx right_front;
@@ -19,6 +20,10 @@ public class MecanumDrive extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
+
+    public static PIDCoefficients pidCoeffs = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGains = new PIDCoefficients(0, 0, 0);
+    private ElapsedTime PIDTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     @Override
     // code to run when driver hits INIT
@@ -36,6 +41,10 @@ public class MecanumDrive extends OpMode {
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
         carousel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        left_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
 
 
@@ -55,6 +64,12 @@ public class MecanumDrive extends OpMode {
     @Override
     public void start() {
         runtime.reset();
+
+        left_front.setPower(0);
+        left_back.setPower(0);
+        right_front.setPower(0);
+        right_back.setPower(0);
+        carousel.setPower(0);
     }
 
     /*
@@ -66,18 +81,19 @@ public class MecanumDrive extends OpMode {
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
 
-        //max power ow is 0.7 cuz testing adn don't wan to go crazy;  change if neccesary
-        double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
+        // double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
 
-        double left_front_power = (ly + lx - rx) / denominator;
-        double left_back_power = (ly - lx - rx) / denominator;
-        double right_front_power = (ly - lx + rx) / denominator;
-        double right_back_power = (ly + lx + rx) / denominator;
+        /* max power is is 0.7 cuz testing and don't wan to go crazy;  change if necessary
+        divide by denominator to correct for imperfect strafing */
+        double left_front_power = (ly + lx - rx);
+        double left_back_power = (ly - lx - rx);
+        double right_front_power = (ly - lx + rx);
+        double right_back_power = (ly + lx + rx);
 
-        left_front.setPower(0.2*left_front_power);
-        left_back.setPower(0.2*left_back_power);
-        right_front.setPower(0.2*right_front_power);
-        right_back.setPower(0.2*right_back_power);
+        PIDLF(left_front_power);
+        PIDLB(left_back_power);
+        PIDRF(right_front_power);
+        PIDRB(right_back_power);
 
         while (gamepad1.dpad_up == true) {
             carousel.setVelocity(200);
@@ -118,10 +134,10 @@ public class MecanumDrive extends OpMode {
             right_front.setPower(0);
             right_back.setPower(0);
 
-            left_front.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            left_back.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            right_front.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            right_back.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            left_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         }
         telemetry.addData("Runtime: ", runtime.toString());
@@ -133,6 +149,93 @@ public class MecanumDrive extends OpMode {
      */
     @Override
     public void stop () {
+
+    }
+
+    double integralLF = 0;
+    double lastErrorLF = 0;
+    public void PIDLF(double targetVelocity) {
+        PIDTimer.reset();
+        double currentVelocity = left_front.getVelocity();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralLF += error * PIDTimer.time();
+
+        double deltaError = error - lastErrorLF;
+        double derivative = deltaError / PIDTimer.time();
+
+        pidGains.p = pidCoeffs.p * error;
+        pidGains.i = pidCoeffs.i * integralLF;
+        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+
+
+        left_front.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+
+    }
+
+    double integralLB = 0;
+    double lastErrorLB = 0;
+    public void PIDLB(double targetVelocity) {
+        PIDTimer.reset();
+        double currentVelocity = left_back.getVelocity();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralLB += error * PIDTimer.time();
+
+        double deltaError = error - lastErrorLB;
+        double derivative = deltaError / PIDTimer.time();
+
+        pidGains.p = pidCoeffs.p * error;
+        pidGains.i = pidCoeffs.i * integralLB;
+        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+
+
+        left_back.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+
+    }
+
+    double integralRF = 0;
+    double lastErrorRF = 0;
+    public void PIDRF(double targetVelocity) {
+        PIDTimer.reset();
+        double currentVelocity = right_front.getPower();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralRF += error * PIDTimer.time();
+
+        double deltaError = error - lastErrorRF;
+        double derivative = deltaError / PIDTimer.time();
+
+        pidGains.p = pidCoeffs.p * error;
+        pidGains.i = pidCoeffs.i * integralRF;
+        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+
+
+        right_front.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+
+    }
+
+    double integralRB = 0;
+    double lastErrorRB = 0;
+    public void PIDRB(double targetVelocity) {
+        PIDTimer.reset();
+        double currentVelocity = right_back.getVelocity();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralRB += error * PIDTimer.time();
+
+        double deltaError = error - lastErrorRB;
+        double derivative = deltaError / PIDTimer.time();
+
+        pidGains.p = pidCoeffs.p * error;
+        pidGains.i = pidCoeffs.i * integralRB;
+        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+
+        right_back.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
 
     }
 
