@@ -204,13 +204,20 @@ public class MecanumDriveBlue extends OpMode {
             right_front.setPower(0);
             right_back.setPower(0);
 
+            while (yAxisLockLoop == true) {
+                double left_y = gamepad1.left_stick_y;
 
+                left_front.setPower(left_y);
+                left_back.setPower(left_y);
+                right_front.setPower(left_y);
+                right_back.setPower(left_y);
 
-            while (gamepad1.dpad_up == true) {
-                left_front.setPower(ly);
-                left_back.setPower(ly);
-                right_front.setPower(ly);
-                right_back.setPower(ly);
+                telemetry.addData("Axis Lock: ", "Y Activated");
+                telemetry.addData("Left Front Power: ", left_front.getPower());
+                telemetry.addData("Right Front Power: ", right_front.getPower());
+                telemetry.addData("Left Back Power: ", left_back.getPower());
+                telemetry.addData("Right Back Power: ", right_back.getPower());
+                telemetry.update();
 
                 if (gamepad1.dpad_down == true && gamepad1.dpad_up == false) {
                     left_front.setPower(0);
