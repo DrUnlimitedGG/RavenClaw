@@ -17,7 +17,7 @@ public class MecanumDriveBlue extends OpMode {
     public DcMotorEx right_back;
     public DcMotorEx left_back;
     public DcMotorEx carousel;
-    public DcMotorEx cascadingLift;
+    //public DcMotorEx cascadingLift;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
@@ -41,7 +41,7 @@ public class MecanumDriveBlue extends OpMode {
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         left_back = hardwareMap.get(DcMotorEx.class, "left_back");
         carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
-        cascadingLift = hardwareMap.get(DcMotorEx.class, "cascading_lift");
+        //cascadingLift = hardwareMap.get(DcMotorEx.class, "cascading_lift");
 
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
         right_back.setDirection(DcMotorEx.Direction.REVERSE);
@@ -53,7 +53,7 @@ public class MecanumDriveBlue extends OpMode {
         left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        cascadingLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //cascadingLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
     }
@@ -103,9 +103,9 @@ public class MecanumDriveBlue extends OpMode {
         right_back.setPower(right_back_power);
 
         while (gamepad2.right_bumper == true) {
-            PIDcarousel(200);
-            if (gamepad2.right_bumper == false) {
-                carousel.setPower(0);
+                PIDcarousel(200);
+                if (gamepad2.right_bumper == false) {
+                    carousel.setPower(0);
                 break;
             }
         }
@@ -118,18 +118,20 @@ public class MecanumDriveBlue extends OpMode {
             }
         }
 
+        /*
         if (gamepad1.b == true) {
+
             right_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             left_front.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             left_back.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             right_back.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-            /*
+
             right_front.setTargetPosition(-TK);
             right_back.setTargetPosition(-TK);
             left_front.setTargetPosition(TK);
             left_back.setTargetPosition(TK);
-             */
+
 
             right_front.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             right_back.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -159,6 +161,7 @@ public class MecanumDriveBlue extends OpMode {
             right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         }
+        */
 
         if (gamepad1.dpad_right == true) {
             left_front.setPower(0);
@@ -210,7 +213,7 @@ public class MecanumDriveBlue extends OpMode {
             }
         }
 
-        if (gamepad2.dpad_up == true) {
+        /*if (gamepad2.dpad_up == true) {
             cascadingLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             cascadingLift.setTargetPosition(30);
             cascadingLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -234,7 +237,7 @@ public class MecanumDriveBlue extends OpMode {
             }
 
             cascadingLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
+        } */
 
 
 
@@ -365,7 +368,7 @@ public class MecanumDriveBlue extends OpMode {
     double integralCascade = 0;
     double lastErrorCascade = 0;
 
-    public void PIDcascade(double targetVelocity) {
+    /*public void PIDcascade(double targetVelocity) {
         PIDTimerCascade.reset();
         double currentVelocity = cascadingLift.getVelocity();
 
@@ -382,5 +385,5 @@ public class MecanumDriveBlue extends OpMode {
 
         cascadingLift.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
 
-    }
+    } */
 }

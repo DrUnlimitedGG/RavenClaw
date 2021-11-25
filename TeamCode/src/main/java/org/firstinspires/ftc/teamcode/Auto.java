@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(name = "Autonomous", group = "Autonomous")
+@Disabled
 public class Auto extends LinearOpMode {
 
     private DcMotorEx LF = null;
@@ -84,7 +86,6 @@ public class Auto extends LinearOpMode {
         LB.setPower(0);
         RF.setPower(0);
         RB.setPower(0);
-
     }
 
     public void driveForward(double distance, double speed) {
@@ -194,6 +195,8 @@ public class Auto extends LinearOpMode {
 
         quitDriving();
     }
+
+
 
     public void carouselSpin(double time) throws InterruptedException {
         carousel.setVelocity(0.25);
