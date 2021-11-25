@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Red_TeleOp")
+@TeleOp(name = "Red_TeleOp", group = "TeleOps")
 public class MecanumDriveRed extends OpMode {
 
     public DcMotorEx right_front;
@@ -88,9 +88,12 @@ public class MecanumDriveRed extends OpMode {
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
 
+        boolean xAxisLockLoop = true;
+        boolean yAxisLockLoop = true;
+
         // double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
 
-        /* max power is is 0.7 cuz testing and don't wan to go crazy;  change if necessary
+        /* max power is is 0.7 cuz testing and don't want to go crazy;  change if necessary
         divide by denominator to correct for imperfect strafing */
         double left_front_power = (ly + lx - rx);
         double left_back_power = (ly - lx - rx);
@@ -169,13 +172,20 @@ public class MecanumDriveRed extends OpMode {
             right_front.setPower(0);
             right_back.setPower(0);
 
-            boolean xAxisLockLoop = true;
+            while (xAxisLockLoop  == true) {
+                double left_x = gamepad1.left_stick_x;
 
-            while (xAxisLockLoop == true) {
-                left_front.setPower(lx);
-                left_back.setPower(-lx);
-                right_front.setPower(-lx);
-                right_back.setPower(lx);
+                left_front.setPower(left_x);
+                left_back.setPower(-left_x);
+                right_front.setPower(-left_x);
+                right_back.setPower(left_x);
+
+                telemetry.addData("Axis Lock: ", "X Activated");
+                telemetry.addData("Left Front Power: ", left_front.getPower());
+                telemetry.addData("Right Front Power: ", right_front.getPower());
+                telemetry.addData("Left Back Power: ", left_back.getPower());
+                telemetry.addData("Right Back Power: ", right_back.getPower());
+                telemetry.update();
 
                 if (gamepad1.dpad_left == true && gamepad1.dpad_right == false) {
                     left_front.setPower(0);
@@ -194,13 +204,20 @@ public class MecanumDriveRed extends OpMode {
             right_front.setPower(0);
             right_back.setPower(0);
 
-            boolean yAxisLockLoop = true;
-
             while (yAxisLockLoop == true) {
-                left_front.setPower(ly);
-                left_back.setPower(ly);
-                right_front.setPower(ly);
-                right_back.setPower(ly);
+                double left_y = gamepad1.left_stick_y;
+
+                left_front.setPower(left_y);
+                left_back.setPower(left_y);
+                right_front.setPower(left_y);
+                right_back.setPower(left_y);
+
+                telemetry.addData("Axis Lock: ", "Y Activated");
+                telemetry.addData("Left Front Power: ", left_front.getPower());
+                telemetry.addData("Right Front Power: ", right_front.getPower());
+                telemetry.addData("Left Back Power: ", left_back.getPower());
+                telemetry.addData("Right Back Power: ", right_back.getPower());
+                telemetry.update();
 
                 if (gamepad1.dpad_down == true && gamepad1.dpad_up == false) {
                     left_front.setPower(0);
