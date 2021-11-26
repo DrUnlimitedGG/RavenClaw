@@ -22,8 +22,25 @@ public class MecanumDriveBlue extends OpMode {
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
 
-    public static PIDCoefficients pidCoeffs = new PIDCoefficients(0, 0, 0);
-    public PIDCoefficients pidGains = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients pidCoeffsLF = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsLF = new PIDCoefficients(0, 0, 0);
+
+    public static PIDCoefficients pidCoeffsLB = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsLB = new PIDCoefficients(0, 0, 0);
+
+    public static PIDCoefficients pidCoeffsRF = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsRF = new PIDCoefficients(0, 0, 0);
+
+    public static PIDCoefficients pidCoeffsRB = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsRB = new PIDCoefficients(0, 0, 0);
+
+    public static PIDCoefficients pidCoeffsCarousel = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsCarousel = new PIDCoefficients(0, 0, 0);
+
+    public static PIDCoefficients pidCoeffsCascade = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsCascade = new PIDCoefficients(0, 0, 0);
+
+
     private ElapsedTime PIDTimerLF = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerLB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerRF = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -284,13 +301,14 @@ public class MecanumDriveBlue extends OpMode {
         double deltaError = error - lastErrorLF;
         double derivative = deltaError / PIDTimerLF.time();
 
-        pidGains.p = pidCoeffs.p * error;
-        pidGains.i = pidCoeffs.i * integralLF;
-        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+        pidGainsLF.p = pidCoeffsLF.p * error;
+        pidGainsLF.i = pidCoeffsLF.i * integralLF;
+        pidGainsLF.d = pidCoeffsLF.d = pidCoeffsLF.d * derivative;
 
 
-        left_front.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+        left_front.setVelocity(pidGainsLF.p + pidGainsLF.i + pidGainsLF.d + targetVelocity);
 
+        lastErrorLF = error;
     }
 
     double integralLB = 0;
@@ -307,12 +325,14 @@ public class MecanumDriveBlue extends OpMode {
         double deltaError = error - lastErrorLB;
         double derivative = deltaError / PIDTimerLB.time();
 
-        pidGains.p = pidCoeffs.p * error;
-        pidGains.i = pidCoeffs.i * integralLB;
-        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+        pidGainsLB.p = pidCoeffsLB.p * error;
+        pidGainsLB.i = pidCoeffsLB.i * integralLB;
+        pidGainsLB.d = pidCoeffsLB.d = pidCoeffsLB.d * derivative;
 
 
-        left_back.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+        left_back.setVelocity(pidGainsLB.p + pidGainsLB.i + pidGainsLB.d + targetVelocity);
+
+        lastErrorLB = error;
 
     }
 
@@ -330,13 +350,14 @@ public class MecanumDriveBlue extends OpMode {
         double deltaError = error - lastErrorRF;
         double derivative = deltaError / PIDTimerRF.time();
 
-        pidGains.p = pidCoeffs.p * error;
-        pidGains.i = pidCoeffs.i * integralRF;
-        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+        pidGainsRF.p = pidCoeffsRF.p * error;
+        pidGainsRF.i = pidCoeffsRF.i * integralRF;
+        pidGainsRF.d = pidCoeffsRF.d = pidCoeffsRF.d * derivative;
 
 
-        right_front.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+        right_front.setVelocity(pidGainsRF.p + pidGainsRF.i + pidGainsRF.d + targetVelocity);
 
+        lastErrorRF = error;
     }
 
     double integralRB = 0;
@@ -353,12 +374,13 @@ public class MecanumDriveBlue extends OpMode {
         double deltaError = error - lastErrorRB;
         double derivative = deltaError / PIDTimerRB.time();
 
-        pidGains.p = pidCoeffs.p * error;
-        pidGains.i = pidCoeffs.i * integralRB;
-        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+        pidGainsRB.p = pidCoeffsRB.p * error;
+        pidGainsRB.i = pidCoeffsRB.i * integralRB;
+        pidGainsRB.d = pidCoeffsRB.d = pidCoeffsRB.d * derivative;
 
-        right_back.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+        right_back.setVelocity(pidGainsRB.p + pidGainsRB.i + pidGainsRB.d + targetVelocity);
 
+        lastErrorRB = error;
     }
 
     double integralCarousel = 0;
@@ -375,11 +397,13 @@ public class MecanumDriveBlue extends OpMode {
         double deltaError = error - lastErrorRB;
         double derivative = deltaError / PIDTimerCarousel.time();
 
-        pidGains.p = pidCoeffs.p * error;
-        pidGains.i = pidCoeffs.i * integralRB;
-        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+        pidGainsCarousel.p = pidCoeffsCarousel.p * error;
+        pidGainsCarousel.i = pidCoeffsCarousel.i * integralRB;
+        pidGainsCarousel.d = pidCoeffsCarousel.d = pidCoeffsCarousel.d * derivative;
 
-        carousel.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+        carousel.setVelocity(pidGainsCarousel.p + pidGainsCarousel.i + pidGainsCarousel.d + targetVelocity);
+
+        lastErrorCarousel = error;
     }
 
     double integralCascade = 0;
@@ -396,11 +420,12 @@ public class MecanumDriveBlue extends OpMode {
         double deltaError = error - lastErrorCascade;
         double derivative = deltaError / PIDTimerCascade.time();
 
-        pidGains.p = pidCoeffs.p * error;
-        pidGains.i = pidCoeffs.i * integralRB;
-        pidGains.d = pidCoeffs.d = pidCoeffs.d * derivative;
+        pidGainsCascade.p = pidCoeffsCascade.p * error;
+        pidGainsCascade.i = pidCoeffsCascade.i * integralCascade;
+        pidGainsCascade.d = pidCoeffsCascade.d = pidCoeffsCascade.d * derivative;
 
-        cascadingLift.setVelocity(pidGains.p + pidGains.i + pidGains.d + targetVelocity);
+        cascadingLift.setVelocity(pidGainsCascade.p + pidGainsCascade.i + pidGainsCascade.d + targetVelocity);
 
+        lastErrorCascade = error;
     } */
 }
