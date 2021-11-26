@@ -48,6 +48,14 @@ public class MecanumDriveRed extends OpMode {
     private ElapsedTime PIDTimerCarousel = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerCascade = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
+    public boolean xAxisLockLoop = false;
+    public boolean yAxisLockLoop = false;
+
+    boolean current_DpadUP = false;
+    boolean last_DpadUP = false;
+
+    boolean current_DpadRIGHT = false;
+    boolean last_DpadRIGHT = false;
 
     @Override
     // code to run when driver hits INIT
@@ -73,6 +81,7 @@ public class MecanumDriveRed extends OpMode {
         //cascadingLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
+
     }
 
     /*
@@ -94,6 +103,8 @@ public class MecanumDriveRed extends OpMode {
         right_front.setPower(0);
         right_back.setPower(0);
         carousel.setPower(0);
+
+
     }
 
     /*
@@ -101,21 +112,76 @@ public class MecanumDriveRed extends OpMode {
      */
     @Override
     public void loop() {
+        if (gamepad1.dpad_right == true) {
+            if (yAxisLockLoop == true) {
+                telemetry.addData("Error: ", "Please disengage the Y-Axis lock!");
+                telemetry.update();
+            } else if (yAxisLockLoop == false) {
+                xAxisLockLoop = true;
+            }
+        } else if (gamepad1.dpad_left == true && xAxisLockLoop == true) {
+            xAxisLockLoop = false;
+        }
+
+        if (gamepad1.dpad_up == true) {
+            if (xAxisLockLoop == true) {
+                telemetry.addData("Error: ", "Please disengage the X-Axis lock!");
+                telemetry.update();
+            } else if (xAxisLockLoop == false) {
+                yAxisLockLoop = true;
+            }
+        } else if (gamepad1.dpad_down == true && yAxisLockLoop == true) {
+            yAxisLockLoop = false;
+        }
+
+
         double lx = gamepad1.left_stick_x;
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
 
-        boolean xAxisLockLoop = true;
-        boolean yAxisLockLoop = true;
+        if(xAxisLockLoop == true) {
+            ly = 0;
+            rx = 0;
+        }
 
-        // double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
+        if(yAxisLockLoop == true) {
+            lx = 0;
+            rx = 0;
+        }
+
+
+        /*if (gamepad1.x == true) {
+            xAxisLockLoop = true;
+            telemetry.addData("X-Axis Lock:", "Activated!");
+            telemetry.update();
+        } else if (gamepad1.x == false) {
+            xAxisLockLoop = false;
+        }
+
+        if (xAxisLockLoop == true) {
+            ly = 0;
+            rx = 0;
+        }
+
+        if (gamepad1.y == true) {
+            yAxisLockLoop = true;
+        } else if (gamepad1.y == false) {
+            yAxisLockLoop = false;
+        }
+
+        if (yAxisLockLoop == true) {
+            lx = 0;
+            rx = 0;
+        } */
+
+        double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
 
         /* max power is is 0.7 cuz testing and don't want to go crazy;  change if necessary
         divide by denominator to correct for imperfect strafing */
-        double left_front_power = (ly + lx - rx);
-        double left_back_power = (ly - lx - rx);
-        double right_front_power = (ly - lx + rx);
-        double right_back_power = (ly + lx + rx);
+        double left_front_power = (ly + lx - rx) / denominator;
+        double left_back_power = (ly - lx - rx) / denominator;
+        double right_front_power = (ly - lx + rx) / denominator;
+        double right_back_power = (ly + lx + rx) / denominator;
 
         left_front.setPower(left_front_power);
         left_back.setPower(left_back_power);
@@ -183,7 +249,7 @@ public class MecanumDriveRed extends OpMode {
         }
         */
 
-        if (gamepad1.dpad_right == true) {
+        /*if (gamepad1.dpad_right == true) {
             left_front.setPower(0);
             left_back.setPower(0);
             right_front.setPower(0);
@@ -213,9 +279,9 @@ public class MecanumDriveRed extends OpMode {
                     break;
                 }
             }
-        }
+        } */
 
-        if (gamepad1.dpad_up == true) {
+        /*if (gamepad1.dpad_up == true) {
             left_front.setPower(0);
             left_back.setPower(0);
             right_front.setPower(0);
@@ -247,7 +313,7 @@ public class MecanumDriveRed extends OpMode {
             }
         }
 
-        /*if (gamepad2.dpad_up == true) {
+        if (gamepad2.dpad_up == true) {
             cascadingLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             cascadingLift.setTargetPosition(30);
             cascadingLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
