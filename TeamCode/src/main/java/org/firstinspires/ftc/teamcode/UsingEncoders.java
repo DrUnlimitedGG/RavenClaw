@@ -11,9 +11,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous(name = "Autonomous", group = "Autonomous")
+@Autonomous(name = "Autonomous", group = "Testing Stuff")
 @Disabled
-public class Auto extends LinearOpMode {
+public class UsingEncoders extends LinearOpMode {
 
     private DcMotorEx LF = null;
     private DcMotorEx LB = null;
