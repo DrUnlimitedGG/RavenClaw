@@ -118,9 +118,12 @@ public class MecanumDriveBlue extends OpMode {
                 telemetry.update();
             } else if (yAxisLockLoop == false) {
                 xAxisLockLoop = true;
+                telemetry.addData("X Axis Lock: ", "Activated!");
             }
         } else if (gamepad1.dpad_left == true && xAxisLockLoop == true) {
             xAxisLockLoop = false;
+            telemetry.addData("X Axis Lock: ", "Disabled!");
+
         }
 
         if (gamepad1.dpad_up == true) {
@@ -129,9 +132,13 @@ public class MecanumDriveBlue extends OpMode {
                 telemetry.update();
             } else if (xAxisLockLoop == false) {
                 yAxisLockLoop = true;
+                telemetry.addData("Y Axis Lock: ", "Activated!");
+
             }
         } else if (gamepad1.dpad_down == true && yAxisLockLoop == true) {
             yAxisLockLoop = false;
+            telemetry.addData("Y Axis Lock: ", "Disabled!");
+
         }
 
 
@@ -183,10 +190,10 @@ public class MecanumDriveBlue extends OpMode {
         double right_front_power = (ly - lx + rx) / denominator;
         double right_back_power = (ly + lx + rx) / denominator;
 
-        left_front.setPower(left_front_power);
-        left_back.setPower(left_back_power);
-        right_front.setPower(right_front_power);
-        right_back.setPower(right_back_power);
+        left_front.setPower(0.15 * left_front_power);
+        left_back.setPower(0.15 * left_back_power);
+        right_front.setPower(0.15 * right_front_power);
+        right_back.setPower(0.15 * right_back_power);
 
         while (gamepad2.right_bumper == true) {
             PIDcarousel(200);
