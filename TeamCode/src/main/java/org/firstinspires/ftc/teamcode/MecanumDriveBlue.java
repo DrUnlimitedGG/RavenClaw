@@ -17,6 +17,7 @@ public class MecanumDriveBlue extends OpMode {
     public DcMotorEx right_back;
     public DcMotorEx left_back;
     public DcMotorEx carousel;
+    public DcMotorEx intake;
     //public DcMotorEx cascadingLift;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
@@ -39,6 +40,9 @@ public class MecanumDriveBlue extends OpMode {
 
     public static PIDCoefficients pidCoeffsCascade = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGainsCascade = new PIDCoefficients(0, 0, 0);
+    
+    public static PIDCoefficients pidCoeffsIntake = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsIntake = new PIDCoefficients(0, 0, 0);
 
 
     private ElapsedTime PIDTimerLF = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -47,6 +51,7 @@ public class MecanumDriveBlue extends OpMode {
     private ElapsedTime PIDTimerRB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerCarousel = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerCascade = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerIntake = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     public boolean xAxisLockLoop = false;
     public boolean yAxisLockLoop = false;
@@ -66,6 +71,7 @@ public class MecanumDriveBlue extends OpMode {
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         left_back = hardwareMap.get(DcMotorEx.class, "left_back");
         carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
+        // intake = hardwareMap.get(DcMotorEx.class, "intake");
         //cascadingLift = hardwareMap.get(DcMotorEx.class, "cascading_lift");
 
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
@@ -73,7 +79,8 @@ public class MecanumDriveBlue extends OpMode {
         left_front.setDirection(DcMotorEx.Direction.FORWARD);
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
-        carousel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        // intake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         left_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -103,6 +110,7 @@ public class MecanumDriveBlue extends OpMode {
         right_front.setPower(0);
         right_back.setPower(0);
         carousel.setPower(0);
+        intake.setPower(0);
 
 
     }
@@ -128,7 +136,7 @@ public class MecanumDriveBlue extends OpMode {
 
         if (gamepad1.dpad_up == true) {
             if (xAxisLockLoop == true) {
-                telemetry.addData("Error: ", "Please disengage the X-Axis lock!");
+                telemetry .addData("Error: ", "Please disengage the X-Axis lock!");
                 telemetry.update();
             } else if (xAxisLockLoop == false) {
                 yAxisLockLoop = true;
@@ -145,6 +153,7 @@ public class MecanumDriveBlue extends OpMode {
         double lx = gamepad1.left_stick_x;
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
+        double intakePower = gamepad2.left_stick_x;
 
         if(xAxisLockLoop == true) {
             ly = 0;
@@ -210,6 +219,8 @@ public class MecanumDriveBlue extends OpMode {
                 break;
             }
         }
+        
+        intake.setPower(intakePower);
 
         /*
         if (gamepad1.b == true) {
