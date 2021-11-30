@@ -9,7 +9,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous
+@Autonomous(name = "Detection", group = "Autonomous")
 public class FFAutoMode extends LinearOpMode{
     OpenCvCamera webCam;
     @Override
