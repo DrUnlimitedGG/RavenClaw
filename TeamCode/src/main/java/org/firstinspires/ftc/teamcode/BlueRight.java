@@ -43,6 +43,7 @@ import com.qualcomm.robotcore.util.Range;
 public class BlueRight extends LinearOpMode {
 
     // Declare OpMode members.
+    //dadad
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private DcMotorEx left_front = null;
     private DcMotorEx left_back = null;
