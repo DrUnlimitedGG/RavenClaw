@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Blue_TeleOp", group = "TeleOps")
+@TeleOp(name = "BlueTeleOp", group = "TeleOp")
 public class MecanumDriveBlue extends OpMode {
 
     public DcMotorEx right_front;
@@ -80,6 +80,7 @@ public class MecanumDriveBlue extends OpMode {
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
         carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        carousel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         // intake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         left_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -211,7 +212,7 @@ public class MecanumDriveBlue extends OpMode {
         telemetry.update();
 
         while (gamepad2.right_bumper == true) {
-            carousel.setPower(200);
+            carousel.setPower(0.07);
             if (gamepad2.right_bumper == false) {
                 carousel.setPower(0);
                 break;
@@ -219,7 +220,7 @@ public class MecanumDriveBlue extends OpMode {
         }
 
         while (gamepad2.left_bumper == true) {
-            carousel.setPower(-200);
+            carousel.setPower(-0.07);
             if (gamepad2.left_bumper == false) {
                 carousel.setPower(0);
                 break;

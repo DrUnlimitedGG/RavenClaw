@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Red_TeleOp", group = "TeleOps")
+@TeleOp(name = "RedTeleOp", group = "TeleOp")
 public class MecanumDriveRed extends OpMode {
 
     public DcMotorEx right_front;
@@ -17,6 +17,7 @@ public class MecanumDriveRed extends OpMode {
     public DcMotorEx right_back;
     public DcMotorEx left_back;
     public DcMotorEx carousel;
+    // public DcMotorEx intake;
     //public DcMotorEx cascadingLift;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
@@ -40,6 +41,9 @@ public class MecanumDriveRed extends OpMode {
     public static PIDCoefficients pidCoeffsCascade = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGainsCascade = new PIDCoefficients(0, 0, 0);
 
+    public static PIDCoefficients pidCoeffsIntake = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsIntake = new PIDCoefficients(0, 0, 0);
+
 
     private ElapsedTime PIDTimerLF = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerLB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -47,6 +51,7 @@ public class MecanumDriveRed extends OpMode {
     private ElapsedTime PIDTimerRB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerCarousel = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime PIDTimerCascade = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime PIDTimerIntake = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     public boolean xAxisLockLoop = false;
     public boolean yAxisLockLoop = false;
@@ -66,14 +71,17 @@ public class MecanumDriveRed extends OpMode {
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         left_back = hardwareMap.get(DcMotorEx.class, "left_back");
         carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
+        // intake = hardwareMap.get(DcMotorEx.class, "intake");
         //cascadingLift = hardwareMap.get(DcMotorEx.class, "cascading_lift");
 
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
         right_back.setDirection(DcMotorEx.Direction.REVERSE);
-        left_front.setDirection(DcMotorEx.Direction.FORWARD);
+        left_front.setDirection(DcMotorEx.Direction.REVERSE);
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
-        carousel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // intake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         left_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -103,6 +111,7 @@ public class MecanumDriveRed extends OpMode {
         right_front.setPower(0);
         right_back.setPower(0);
         carousel.setPower(0);
+        //intake.setPower(0);
 
 
     }
@@ -118,26 +127,34 @@ public class MecanumDriveRed extends OpMode {
                 telemetry.update();
             } else if (yAxisLockLoop == false) {
                 xAxisLockLoop = true;
+                telemetry.addData("X Axis Lock: ", "Activated!");
             }
         } else if (gamepad1.dpad_left == true && xAxisLockLoop == true) {
             xAxisLockLoop = false;
+            telemetry.addData("X Axis Lock: ", "Disabled!");
+
         }
 
         if (gamepad1.dpad_up == true) {
             if (xAxisLockLoop == true) {
-                telemetry.addData("Error: ", "Please disengage the X-Axis lock!");
+                telemetry .addData("Error: ", "Please disengage the X-Axis lock!");
                 telemetry.update();
             } else if (xAxisLockLoop == false) {
                 yAxisLockLoop = true;
+                telemetry.addData("Y Axis Lock: ", "Activated!");
+
             }
         } else if (gamepad1.dpad_down == true && yAxisLockLoop == true) {
             yAxisLockLoop = false;
+            telemetry.addData("Y Axis Lock: ", "Disabled!");
+
         }
 
 
         double lx = gamepad1.left_stick_x;
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
+        double intakePower = gamepad2.left_stick_x;
 
         if(xAxisLockLoop == true) {
             ly = 0;
@@ -183,13 +200,19 @@ public class MecanumDriveRed extends OpMode {
         double right_front_power = (ly - lx + rx) / denominator;
         double right_back_power = (ly + lx + rx) / denominator;
 
-        left_front.setPower(left_front_power);
-        left_back.setPower(left_back_power);
-        right_front.setPower(right_front_power);
-        right_back.setPower(right_back_power);
+        left_front.setPower(-1 * (0.15 * left_front_power));
+        left_back.setPower(-1 * (0.15 * left_back_power));
+        right_front.setPower(-1 * (0.15 * right_front_power));
+        right_back.setPower(-1 * (0.15 * right_back_power));
+
+        telemetry.addData("Left Front ", left_front_power);
+        telemetry.addData("Left Back ", left_back_power);
+        telemetry.addData("Right Front ", right_front_power);
+        telemetry.addData("Right Back ", right_back_power);
+        telemetry.update();
 
         while (gamepad2.right_bumper == true) {
-            PIDcarousel(-200);
+            carousel.setPower(-0.07);
             if (gamepad2.right_bumper == false) {
                 carousel.setPower(0);
                 break;
@@ -197,12 +220,14 @@ public class MecanumDriveRed extends OpMode {
         }
 
         while (gamepad2.left_bumper == true) {
-            PIDcarousel(200);
+            carousel.setPower(0.07);
             if (gamepad2.left_bumper == false) {
                 carousel.setPower(0);
                 break;
             }
         }
+
+        //intake.setPower(intakePower);
 
         /*
         if (gamepad1.b == true) {

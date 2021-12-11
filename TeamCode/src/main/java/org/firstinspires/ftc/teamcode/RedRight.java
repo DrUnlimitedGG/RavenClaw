@@ -39,9 +39,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@Autonomous(name="RedLeft", group = "Red")
-// @Disabled
-public class RedLeft extends LinearOpMode {
+@Autonomous(name="RedRight", group = "Red")
+//@Disabled
+public class RedRight extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);

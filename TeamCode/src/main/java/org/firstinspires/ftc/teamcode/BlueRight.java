@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 @Autonomous(name="BlueRight", group = "Blue")
+// @Disabled
 public class BlueRight extends LinearOpMode {
 
     // Declare OpMode members.
