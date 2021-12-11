@@ -17,7 +17,7 @@ public class MecanumDriveBlue extends OpMode {
     public DcMotorEx right_back;
     public DcMotorEx left_back;
     public DcMotorEx carousel;
-    public DcMotorEx intake;
+    // public DcMotorEx intake;
     //public DcMotorEx cascadingLift;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
@@ -76,7 +76,7 @@ public class MecanumDriveBlue extends OpMode {
 
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
         right_back.setDirection(DcMotorEx.Direction.REVERSE);
-        left_front.setDirection(DcMotorEx.Direction.FORWARD);
+        left_front.setDirection(DcMotorEx.Direction.REVERSE);
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
         carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -110,7 +110,7 @@ public class MecanumDriveBlue extends OpMode {
         right_front.setPower(0);
         right_back.setPower(0);
         carousel.setPower(0);
-        intake.setPower(0);
+        //intake.setPower(0);
 
 
     }
@@ -199,13 +199,19 @@ public class MecanumDriveBlue extends OpMode {
         double right_front_power = (ly - lx + rx) / denominator;
         double right_back_power = (ly + lx + rx) / denominator;
 
-        left_front.setPower(0.15 * left_front_power);
-        left_back.setPower(0.15 * left_back_power);
-        right_front.setPower(0.15 * right_front_power);
-        right_back.setPower(0.15 * right_back_power);
+        left_front.setPower(-1 * (0.15 * left_front_power));
+        left_back.setPower(-1 * (0.15 * left_back_power));
+        right_front.setPower(-1 * (0.15 * right_front_power));
+        right_back.setPower(-1 * (0.15 * right_back_power));
+
+        telemetry.addData("Left Front ", left_front_power);
+        telemetry.addData("Left Back ", left_back_power);
+        telemetry.addData("Right Front ", right_front_power);
+        telemetry.addData("Right Back ", right_back_power);
+        telemetry.update();
 
         while (gamepad2.right_bumper == true) {
-            PIDcarousel(200);
+            carousel.setPower(200);
             if (gamepad2.right_bumper == false) {
                 carousel.setPower(0);
                 break;
@@ -213,14 +219,14 @@ public class MecanumDriveBlue extends OpMode {
         }
 
         while (gamepad2.left_bumper == true) {
-            PIDcarousel(-200);
+            carousel.setPower(-200);
             if (gamepad2.left_bumper == false) {
                 carousel.setPower(0);
                 break;
             }
         }
         
-        intake.setPower(intakePower);
+        //intake.setPower(intakePower);
 
         /*
         if (gamepad1.b == true) {
