@@ -12,14 +12,13 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(name = "Autonomous", group = "Testing Stuff")
-@Disabled
 public class UsingEncoders extends LinearOpMode {
 
     private DcMotorEx LF = null;
     private DcMotorEx LB = null;
     private DcMotorEx RF = null;
     private DcMotorEx RB = null;
-    private OpenCvCamera phoneCam;
+    //private OpenCvCamera phoneCam;
     private DcMotorEx carousel = null;
 
     private final double encoderConstant = 45.2847909695;
@@ -40,7 +39,7 @@ public class UsingEncoders extends LinearOpMode {
 
         carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        int cameraMonitorViewId = hardwareMap.appContext
+        /*int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance()
@@ -72,11 +71,11 @@ public class UsingEncoders extends LinearOpMode {
             case NOT_FOUND:
                 // ...
         }
-        phoneCam.stopStreaming();
+        phoneCam.stopStreaming();*/
+        waitForStart();
 
-
-        while (opModeIsActive()) {
-
+        if (opModeIsActive()) {
+            driveForward(5, 200);
         }
     }
 
@@ -93,7 +92,15 @@ public class UsingEncoders extends LinearOpMode {
         LB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
+        LF.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        RF.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        LB.setPower(speed);
+        LF.setPower(speed);
+        RB.setPower(speed);
+        RF.setPower(speed);
+/*
         LF.setTargetPosition((int) (distance * encoderConstant));
         LB.setTargetPosition((int) (distance * encoderConstant));
         RF.setTargetPosition((int) (distance * encoderConstant));
@@ -108,9 +115,9 @@ public class UsingEncoders extends LinearOpMode {
         LB.setVelocity(speed);
         RF.setVelocity(speed);
         RB.setVelocity(speed);
-
+*/
         while (LF.isBusy() && LB.isBusy() && RF.isBusy() && RB.isBusy()) {
-            idle();
+
         }
 
         quitDriving();
