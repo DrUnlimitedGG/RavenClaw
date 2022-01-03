@@ -1,16 +1,16 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.vision.DuckDetector;
+import org.firstinspires.ftc.teamcode.DuckDetector;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(name = "Detection", group = "Autonomous")
-public class FFAutoMode extends LinearOpMode{
+public class FFAutoDetection extends LinearOpMode{
     OpenCvCamera webCam;
     @Override
     public void runOpMode() throws InterruptedException {
