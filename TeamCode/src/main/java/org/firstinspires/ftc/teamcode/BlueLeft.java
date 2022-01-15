@@ -45,15 +45,11 @@ public class BlueLeft extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-    private DcMotorEx LF = null;
-    private DcMotorEx LB = null;
-    private DcMotorEx RF = null;
-    private DcMotorEx RB = null;
+    private DcMotorEx left_front = null;
+    private DcMotorEx left_back = null;
+    private DcMotorEx right_front = null;
+    private DcMotorEx right_back = null;
     private DcMotorEx carousel = null;
-
-    private final double encoderConstant = 45.2847909695;
-    private final double carouselConstant = 45.8366237;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -63,19 +59,19 @@ public class BlueLeft extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        LF  = hardwareMap.get(DcMotorEx.class, "left_front");
-        LB = hardwareMap.get(DcMotorEx.class, "left_back");
-        RF = hardwareMap.get(DcMotorEx.class, "right_front");
-        RB = hardwareMap.get(DcMotorEx.class, "right_back");
+        left_front  = hardwareMap.get(DcMotorEx.class, "left_front");
+        left_back = hardwareMap.get(DcMotorEx.class, "left_back");
+        right_front = hardwareMap.get(DcMotorEx.class, "right_front");
+        right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        LF.setDirection(DcMotorEx.Direction.REVERSE);
-        LB.setDirection(DcMotorEx.Direction.REVERSE);
-        RF.setDirection(DcMotorEx.Direction.FORWARD);
-        RB.setDirection(DcMotorSimple.Direction.FORWARD);
+        left_front.setDirection(DcMotorEx.Direction.REVERSE);
+        left_back.setDirection(DcMotorEx.Direction.REVERSE);
+        right_front.setDirection(DcMotorEx.Direction.FORWARD);
+        right_back.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -86,7 +82,11 @@ public class BlueLeft extends LinearOpMode {
             telemetry.addData("Running: ", "Blue Left");
             telemetry.update();
 
+            driveForward(0.5, 0.1);
+            Thread.sleep(100);
+            //turnLeft(0.5, 4);
 
+            turnLeft(0.5, 0.7);
 
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -95,151 +95,90 @@ public class BlueLeft extends LinearOpMode {
     }
 
     public void quitDriving() {
-        LF.setPower(0);
-        LB.setPower(0);
-        RF.setPower(0);
-        RB.setPower(0);
+        left_front.setPower(0);
+        left_back.setPower(0);
+        right_front.setPower(0);
+        right_back.setPower(0);
     }
 
-    public void spinCarousel(double distance, double speed) {
-        carousel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        carousel.setTargetPosition((int) (distance * carouselConstant));
-        carousel.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        carousel.setVelocity(speed);
+    public void driveForward(double speed, double time) throws InterruptedException {
+        left_front.setPower(-speed);
+        left_back.setPower(-speed);
+        right_front.setPower(-speed);
+        right_back.setPower(-speed);
 
-        while (carousel.isBusy()) {
-            idle();
-        }
+        double sleepTime = time * 1000;
+        Thread.sleep((long) sleepTime);
+
+        quitDriving();
+    }
+
+    public void driveBack(double speed, double time) throws InterruptedException {
+        left_front.setPower(speed);
+        left_back.setPower(speed);
+        right_front.setPower(speed);
+        right_back.setPower(speed);
+
+        double sleepTime = time * 1000;
+        Thread.sleep((long) sleepTime);
+
+        quitDriving();
+    }
+
+    public void turnLeft(double speed, double time) throws InterruptedException {
+        left_front.setPower(-speed);
+        left_back.setPower(-speed);
+        right_front.setPower(speed);
+        right_back.setPower(speed);
+
+        double sleepTime = time * 1000;
+        Thread.sleep((long) sleepTime);
+
+        quitDriving();
+    }
+
+    public void turnRight(double speed, double time) throws InterruptedException {
+        left_front.setPower(speed);
+        left_back.setPower(speed);
+        right_front.setPower(-speed);
+        right_back.setPower(-speed);
+
+        double sleepTime = time * 1000;
+        Thread.sleep((long) sleepTime);
+
+        quitDriving();
+    }
+
+    public void spinCarousel(double speed, double time) throws InterruptedException {
+        carousel.setPower(speed);
+
+        double sleepTime = time * 1000;
+        Thread.sleep((long) sleepTime);
 
         carousel.setPower(0);
     }
 
-    public void spinCarouselBackwards(double distance, double speed) {
-        carousel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        carousel.setTargetPosition((int) (-1 * (distance * carouselConstant)));
-        carousel.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        carousel.setVelocity(speed);
+    public void strafeRight(double speed, double time) throws InterruptedException {
+        left_front.setPower(-speed);
+        left_back.setPower(speed);
+        right_front.setPower(speed);
+        right_back.setPower(-speed);
 
-        while (carousel.isBusy()) {
-            idle();
-        }
-
-        carousel.setPower(0);
-    }
-
-    public void driveForward(double distance, double speed) {
-        LF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        LB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        LF.setTargetPosition((int) (distance * encoderConstant));
-        LB.setTargetPosition((int) (distance * encoderConstant));
-        RF.setTargetPosition((int) (distance * encoderConstant));
-        RB.setTargetPosition((int) (distance * encoderConstant));
-
-        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        LF.setVelocity(speed);
-        LB.setVelocity(speed);
-        RF.setVelocity(speed);
-        RB.setVelocity(speed);
-
-        while (LF.isBusy() && LB.isBusy() && RF.isBusy() && RB.isBusy()) {
-            idle();
-        }
-
-        quitDriving();
-
-    }
-
-    public void driveBack(double distance, double speed) {
-        LF.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-        LB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-        RF.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-        RB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-
-        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        LF.setVelocity(speed);
-        LB.setVelocity(speed);
-        RF.setVelocity(speed);
-        RB.setVelocity(speed);
-
-        while (LF.isBusy() && LB.isBusy() && RF.isBusy() && RB.isBusy()) {
-            idle();
-        }
+        double sleepTime = time * 1000;
+        Thread.sleep((long) sleepTime);
 
         quitDriving();
     }
 
-    public void turnRight(double distance, double speed) {
-        RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        LF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        LB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+    public void strafeLeft(double speed, double time) throws InterruptedException {
+        left_front.setPower(speed);
+        left_back.setPower(-speed);
+        right_front.setPower(-speed);
+        right_back.setPower(speed);
 
-        RF.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-        RB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-        LF.setTargetPosition((int) (distance * encoderConstant));
-        LB.setTargetPosition((int) (distance * encoderConstant));
-
-        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        RF.setVelocity(-1 * speed);
-        RB.setVelocity(-1 * speed);
-        LF.setVelocity(speed);
-        LB.setVelocity(speed);
-
-        while (RF.isBusy() || RB.isBusy() || LF.isBusy() || LB.isBusy()) {
-            idle();
-        }
+        double sleepTime = time * 1000;
+        Thread.sleep((long) sleepTime);
 
         quitDriving();
-    }
-
-    public void turnLeft(double distance, double speed) {
-        RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        LF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        LB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        RF.setTargetPosition((int) (distance * encoderConstant));
-        RB.setTargetPosition((int) (distance * encoderConstant));
-        LF.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-        LB.setTargetPosition((int) (-1 * (distance * encoderConstant)));
-
-        RF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        LB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        RF.setVelocity(speed);
-        RB.setVelocity(speed);
-        LF.setVelocity(-1 * speed);
-        LB.setVelocity(-1 * speed);
-
-        while (RF.isBusy() || RB.isBusy() || LF.isBusy() || LB.isBusy()) {
-            idle();
-        }
-
-        quitDriving();
-    }
-
-
-
-    public void carouselSpin(double time) throws InterruptedException {
-        carousel.setVelocity(0.25);
-        Thread.sleep((long) (time * 1000));
-        carousel.setVelocity(0);
     }
 }
