@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -39,9 +39,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@Autonomous(name="BlueLeft", group = "Blue")
-//@Disabled
-public class BlueLeft extends LinearOpMode {
+@Autonomous(name="RedLeft", group = "Red")
+// @Disabled
+public class RedLeft extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
@@ -79,15 +79,32 @@ public class BlueLeft extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         if (opModeIsActive()) {
-            telemetry.addData("Running: ", "Blue Left");
+            telemetry.addData("Running: ", "Blue Right");
             telemetry.update();
 
-            driveForward(0.5, 0.1);
+            driveForward(0.5, 1);
             Thread.sleep(100);
             //turnLeft(0.5, 4);
 
-            turnLeft(0.5, 0.7);
+            turnRight(0.5, 2);
+            Thread.sleep(100);
 
+            strafeLeft(0.5, 0.4);
+            Thread.sleep(100);
+
+            driveForward(0.5, 0.9);
+            Thread.sleep(100);
+
+            spinCarousel(-0.2, 4.5);
+            Thread.sleep(100);
+
+            driveBack(0.5, 0.9);
+            Thread.sleep(100);
+
+            turnRight(0.5, 0.25);
+            Thread.sleep(100);
+
+            driveForward(0.5, 0.5);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();

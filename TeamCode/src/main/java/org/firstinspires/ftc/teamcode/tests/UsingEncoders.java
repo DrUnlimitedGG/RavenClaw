@@ -1,123 +1,84 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+package org.firstinspires.ftc.teamcode.tests;
 
-package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-@Autonomous(name="BlueRight", group = "Blue")
-// @Disabled
-public class BlueRight extends LinearOpMode {
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 
-    // Declare OpMode members.
-    //dadad
-    private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+@Autonomous(name = "Autonomous", group = "Testing Stuff")
+public class UsingEncoders extends LinearOpMode {
+
     private DcMotorEx LF = null;
     private DcMotorEx LB = null;
     private DcMotorEx RF = null;
     private DcMotorEx RB = null;
+    //private OpenCvCamera phoneCam;
     private DcMotorEx carousel = null;
 
     private final double encoderConstant = 45.2847909695;
 
-    private final double carouselConstant = 45.8366237;
-
-
     @Override
-    public void runOpMode() throws InterruptedException {
-        telemetry.addData("Stat", "Initialized");
-        telemetry.update();
-
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        LF  = hardwareMap.get(DcMotorEx.class, "left_front");
+    public void runOpMode() throws InterruptedException{
+        LF = hardwareMap.get(DcMotorEx.class, "left_front");
         LB = hardwareMap.get(DcMotorEx.class, "left_back");
         RF = hardwareMap.get(DcMotorEx.class, "right_front");
         RB = hardwareMap.get(DcMotorEx.class, "right_back");
         carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
 
+        LF.setDirection(DcMotorEx.Direction.FORWARD);
+        LB.setDirection(DcMotorEx.Direction.FORWARD);
+        // reverse right side
+        RF.setDirection(DcMotorEx.Direction.REVERSE);
+        RB.setDirection(DcMotorEx.Direction.REVERSE);
 
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        LF.setDirection(DcMotorEx.Direction.REVERSE);
-        LB.setDirection(DcMotorEx.Direction.REVERSE);
-        RF.setDirection(DcMotorEx.Direction.FORWARD);
-        RB.setDirection(DcMotorSimple.Direction.FORWARD);
+        carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        // Wait for the game to start (driver presses PLAY)
+        /*int cameraMonitorViewId = hardwareMap.appContext
+                .getResources().getIdentifier("cameraMonitorViewId",
+                        "id", hardwareMap.appContext.getPackageName());
+        phoneCam = OpenCvCameraFactory.getInstance()
+                .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        DuckDetector detector = new DuckDetector(telemetry);
+        phoneCam.setPipeline(detector);
+        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+
+            }
+        });
         waitForStart();
-        runtime.reset();
+        switch (detector.getLocation()) {
+            case LEFT:
+                // ...
+                break;
+            case RIGHT:
+                // ...
+                break;
+            case NOT_FOUND:
+                // ...
+        }
+        phoneCam.stopStreaming();*/
+        waitForStart();
 
-        // run until the end of the match (driver presses STOP)
         if (opModeIsActive()) {
-            telemetry.addData("Running: ", "Blue Right");
-            telemetry.update();
-
-            driveForward(18, 100);
-            Thread.sleep(100);
-
-            turnLeft(3, 200);
-            Thread.sleep(100);
-
-            // code for viper slides here
-
-            turnRight(10, 100);
-            Thread.sleep(100);
-
-            driveForward(27, 200);
-            Thread.sleep(100);
-
-            spinCarousel(6, 100);
-            Thread.sleep(100);
-
-            driveBack(3, 100);
-            Thread.sleep(100);
-
-            turnRight(10, 100);
-            Thread.sleep(10);
-
-            driveForward(90, 200);
-            Thread.sleep(100);
-
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.update();
+            driveForward(5, 200);
         }
     }
+
 
     public void quitDriving() {
         LF.setPower(0);
@@ -126,38 +87,20 @@ public class BlueRight extends LinearOpMode {
         RB.setPower(0);
     }
 
-    public void spinCarousel(double distance, double speed) {
-        carousel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        carousel.setTargetPosition((int) (distance * carouselConstant));
-        carousel.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        carousel.setVelocity(speed);
-
-        while (carousel.isBusy()) {
-            idle();
-        }
-
-        carousel.setPower(0);
-    }
-
-    public void spinCarouselBackwards(double distance, double speed) {
-        carousel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        carousel.setTargetPosition((int) (-1 * (distance * carouselConstant)));
-        carousel.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        carousel.setVelocity(speed);
-
-        while (carousel.isBusy()) {
-            idle();
-        }
-
-        carousel.setPower(0);
-    }
-
     public void driveForward(double distance, double speed) {
         LF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         LB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         RF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
+        LF.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        RF.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        LB.setPower(speed);
+        LF.setPower(speed);
+        RB.setPower(speed);
+        RF.setPower(speed);
+/*
         LF.setTargetPosition((int) (distance * encoderConstant));
         LB.setTargetPosition((int) (distance * encoderConstant));
         RF.setTargetPosition((int) (distance * encoderConstant));
@@ -172,9 +115,9 @@ public class BlueRight extends LinearOpMode {
         LB.setVelocity(speed);
         RF.setVelocity(speed);
         RB.setVelocity(speed);
-
+*/
         while (LF.isBusy() && LB.isBusy() && RF.isBusy() && RB.isBusy()) {
-            idle();
+
         }
 
         quitDriving();
@@ -267,4 +210,7 @@ public class BlueRight extends LinearOpMode {
         Thread.sleep((long) (time * 1000));
         carousel.setVelocity(0);
     }
+
+
 }
+
