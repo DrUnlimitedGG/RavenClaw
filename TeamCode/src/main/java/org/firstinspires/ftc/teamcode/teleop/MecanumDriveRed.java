@@ -157,7 +157,7 @@ public class MecanumDriveRed extends OpMode {
         telemetry.addData("Right Back ", right_back_power);
         telemetry.update();
 
-        if (viperExtend == true) {
+        while (viperExtend == true) {
             viper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             viper.setTargetPosition((int) encoderConstant);
             viper.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
