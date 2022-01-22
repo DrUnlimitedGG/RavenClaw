@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -12,7 +11,6 @@ import com.qualcomm.robotcore.util.Range;
 
 
 @TeleOp(name="CarouselTest", group="Testing Stuff")
-@Disabled
 public class CarouselTest extends OpMode
 {
     // Declare OpMode members.

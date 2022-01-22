@@ -50,8 +50,7 @@ public class MecanumDriveBlue extends OpMode {
         left_front.setDirection(DcMotorEx.Direction.REVERSE);
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
 
-        carousel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         intake_spinner.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intake_spinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -153,7 +152,7 @@ public class MecanumDriveBlue extends OpMode {
 
         left_front.setPower(-1 * (0.15 * left_front_power));
         left_back.setPower(0.15 * left_back_power);
-        right_front.setPower(-1 * (0.15 * right_front_power));
+        right_front.setPower(0.15 * right_front_power);
         right_back.setPower(0.15 * right_back_power);
 
         intake_spinner.setPower(intakePower);
@@ -173,8 +172,7 @@ public class MecanumDriveBlue extends OpMode {
         }*/
 
         if (gamepad2.right_bumper == true) {
-            telemetry.addData("Carousel", carousel.getPortNumber());
-            carousel.setPower(0.07);
+            carousel.setPower(0.23);
 
         }
 
@@ -183,8 +181,7 @@ public class MecanumDriveBlue extends OpMode {
         }
 
         if (gamepad2.left_bumper == true) {
-            telemetry.addData("Carousel", carousel.getPortNumber());
-            carousel.setPower(-0.07);
+            carousel.setPower(-0.23);
         }
 
         if (gamepad2.left_bumper == false) {
