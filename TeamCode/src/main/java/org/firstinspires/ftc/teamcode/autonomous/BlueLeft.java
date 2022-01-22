@@ -63,7 +63,7 @@ public class BlueLeft extends LinearOpMode {
         left_back = hardwareMap.get(DcMotorEx.class, "left_back");
         right_front = hardwareMap.get(DcMotorEx.class, "right_front");
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
-        carousel = hardwareMap.get(DcMotorEx.class, "sustainable");
+        carousel = hardwareMap.get(DcMotorEx.class, "carousel");
 
 
         // Most robots need the motor on one side to be reversed to drive forward

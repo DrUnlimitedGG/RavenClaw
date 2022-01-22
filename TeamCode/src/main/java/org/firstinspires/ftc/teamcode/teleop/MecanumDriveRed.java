@@ -17,11 +17,14 @@ public class MecanumDriveRed extends OpMode {
     private DcMotorEx right_back;
     private DcMotorEx left_back;
     private DcMotorEx carousel;
-    private DcMotorEx intake;
+
+    //private DcMotorEx intake_spinner;
+    private Servo intake_transfer;
     private DcMotorEx viper;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
+    private double encoderViper = 97.8029862845;
 
     public boolean xAxisLockLoop = false;
     public boolean yAxisLockLoop = false;
@@ -36,8 +39,9 @@ public class MecanumDriveRed extends OpMode {
         left_back = hardwareMap.get(DcMotorEx.class, "left_back");
         carousel = hardwareMap.get(DcMotorEx.class, "carousel");
 
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        viper = hardwareMap.get(DcMotorEx.class, "viper");
+        //intake_spinner = hardwareMap.get(DcMotorEx.class, "intake_spinner");
+        //intake_transfer = hardwareMap.get(Servo.class, "intake_transfer");
+        //viper = hardwareMap.get(DcMotorEx.class, "viper");
 
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
         right_back.setDirection(DcMotorEx.Direction.REVERSE);
@@ -47,15 +51,15 @@ public class MecanumDriveRed extends OpMode {
         carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //intake_spinner.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        //intake_spinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         left_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         left_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        viper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //viper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
     }
 
@@ -122,8 +126,8 @@ public class MecanumDriveRed extends OpMode {
         double ly = -gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
 
-        double intakePower = gamepad2.left_stick_y;
-        boolean viperExtend = gamepad2.b;
+        //double intakePower = gamepad2.left_stick_y;
+        //boolean viperExtend = gamepad2.b;
 
         if(xAxisLockLoop == true) {
             ly = 0;
@@ -145,11 +149,11 @@ public class MecanumDriveRed extends OpMode {
         double right_back_power = (ly + lx + rx) / denominator;
 
         left_front.setPower(-1 * (0.15 * left_front_power));
-        left_back.setPower(-1 * (0.15 * left_back_power));
+        left_back.setPower(0.15 * left_back_power);
         right_front.setPower(-1 * (0.15 * right_front_power));
-        right_back.setPower(-1 * (0.15 * right_back_power));
+        right_back.setPower(0.15 * right_back_power);
 
-        intake.setPower(intakePower);
+        //intake_spinner.setPower(intakePower);
 
         telemetry.addData("Left Front ", left_front_power);
         telemetry.addData("Left Back ", left_back_power);
@@ -157,9 +161,9 @@ public class MecanumDriveRed extends OpMode {
         telemetry.addData("Right Back ", right_back_power);
         telemetry.update();
 
-        while (viperExtend == true) {
+        /*while (viperExtend == true) {
             viper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            viper.setTargetPosition((int) encoderConstant);
+            viper.setTargetPosition((int) encoderViper);
             viper.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             viper.setVelocity(12);
 
@@ -168,7 +172,7 @@ public class MecanumDriveRed extends OpMode {
             }
 
             viper.setPower(0);
-        }
+        }*/
 
         while (gamepad2.right_bumper == true) {
             carousel.setPower(-0.07);
@@ -184,6 +188,15 @@ public class MecanumDriveRed extends OpMode {
                 carousel.setPower(0);
                 break;
             }
+        }
+
+        if (gamepad2.a) {
+            //intake_transfer.setPosition(60);
+
+        }
+
+        if (gamepad2.b) {
+            //intake_transfer.setPosition(0);
         }
 
         telemetry.addData("Runtime: ", runtime.toString());
