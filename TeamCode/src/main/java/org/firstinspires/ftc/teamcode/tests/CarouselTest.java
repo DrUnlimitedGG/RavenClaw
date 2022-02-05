@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="CarouselTest", group="Testing Stuff")
+@TeleOp(name="CarouselTest", group="Tests")
 public class CarouselTest extends OpMode
 {
     // Declare OpMode members.

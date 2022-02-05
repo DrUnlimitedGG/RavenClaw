@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 
-@TeleOp(name="Wheel Test2", group="Testing Stuff")
+@TeleOp(name="WheelTest2", group="Tests")
 public class WheelTest2 extends OpMode
 {
     // Declare OpMode members.

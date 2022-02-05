@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "PIDTest", group = "Testing Stuff")
-public class PIDTest extends LinearOpMode {
+@Autonomous(name = "PIDTest", group = "Tests")
+public class OldPID extends LinearOpMode {
 
     private DcMotorEx LF = null;
     private DcMotorEx LB = null;

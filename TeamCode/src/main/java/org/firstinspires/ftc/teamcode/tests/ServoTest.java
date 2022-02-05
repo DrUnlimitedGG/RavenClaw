@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="ServoTest", group="Testing Stuff")
+@TeleOp(name="ServoTest", group="Tests")
 
 public class ServoTest extends OpMode
 {
