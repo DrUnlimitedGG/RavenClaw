@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.tests;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 @TeleOp(name="WheelTest", group="Tests")
@@ -28,8 +29,8 @@ public class WheelTest extends OpMode
 
         RF.setDirection(DcMotorEx.Direction.REVERSE);
         RB.setDirection(DcMotorEx.Direction.REVERSE);
-        LF.setDirection(DcMotorEx.Direction.FORWARD);
-        LB.setDirection(DcMotorEx.Direction.FORWARD);
+        LF.setDirection(DcMotorEx.Direction.REVERSE);
+        LB.setDirection(DcMotorEx.Direction.REVERSE);
 
     }
 

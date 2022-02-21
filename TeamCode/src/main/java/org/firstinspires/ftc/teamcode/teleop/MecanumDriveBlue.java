@@ -12,11 +12,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "BlueTeleOp", group = "TeleOp")
 public class MecanumDriveBlue extends OpMode {
+    private boolean viperextended = false;
+
+    private double directPower = 0;
 
     private DcMotorEx right_front;
     private DcMotorEx left_front;
     private DcMotorEx right_back;
     private DcMotorEx left_back;
+    private DcMotorEx viper_direct = null;
+    private DcMotorEx viper_indirect = null;
 
     private DcMotorEx carousel;
 
@@ -30,6 +35,19 @@ public class MecanumDriveBlue extends OpMode {
 
     public boolean xAxisLockLoop = false;
     public boolean yAxisLockLoop = false;
+
+    static double speed = 50;
+
+    public static PIDCoefficients pidCoeffsDir = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsDir = new PIDCoefficients(0, 0, 0);
+
+    ElapsedTime PIDTimerDir = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+    public static PIDCoefficients pidCoeffsIndir = new PIDCoefficients(0, 0, 0);
+    public PIDCoefficients pidGainsIndir = new PIDCoefficients(0, 0, 0);
+
+    ElapsedTime PIDTimerIndir = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
 
     @Override
     // code to run when driver hits INIT
@@ -209,6 +227,100 @@ public class MecanumDriveBlue extends OpMode {
     @Override
     public void stop() {
 
+    }
+
+    public void viper_extend() {
+        viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+        viper_direct.setTargetPosition(100);
+        viper_indirect.setTargetPosition(100);
+
+        viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+        viper_direct.setVelocity(speed);
+        viper_indirect.setVelocity(speed);
+
+        while (viper_direct.isBusy() && viper_indirect.isBusy()) {
+            PIDdirect(speed);
+            directPower = viper_direct.getVelocity();
+            PIDindirect(directPower);
+        }
+
+        viper_direct.setPower(0);
+        viper_indirect.setPower(0);
+
+    }
+
+    public void viper_lower() {
+        viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+        viper_direct.setTargetPosition(-100);
+        viper_indirect.setTargetPosition(-100);
+
+        viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+        viper_direct.setVelocity(speed);
+        viper_indirect.setVelocity(speed);
+
+        while (viper_direct.isBusy() && viper_indirect.isBusy()) {
+            PIDdirect(speed);
+            directPower = viper_direct.getVelocity();
+            PIDindirect(directPower);
+        }
+
+        viper_direct.setPower(0);
+        viper_indirect.setPower(0);
+
+    }
+
+    double integralDir = 0;
+    double lastErrorDir = 0;
+    public void PIDdirect(double targetVelocity) {
+        PIDTimerDir.reset();
+
+        double currentVelocity = viper_direct.getVelocity();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralDir += error * PIDTimerDir.time();
+
+        double deltaError = error - lastErrorDir;
+        double derivative = deltaError / PIDTimerDir.time();
+
+        pidGainsDir.p = pidCoeffsDir.p * error;
+        pidGainsDir.i = pidCoeffsDir.i * integralDir;
+        pidGainsDir.d = pidCoeffsDir.d * derivative;
+
+        viper_direct.setVelocity(targetVelocity + pidGainsDir.p + pidGainsDir.i + pidGainsDir.d);
+
+        lastErrorDir = error;
+    }
+
+    double integralIndir = 0;
+    double lastErrorIndir = 0;
+    public void PIDindirect(double targetVelocity) {
+        PIDTimerIndir.reset();
+
+        double currentVelocity = viper_indirect.getVelocity();
+
+        double error = targetVelocity - currentVelocity;
+
+        integralDir += error * PIDTimerIndir.time();
+
+        double deltaError = error - lastErrorDir;
+        double derivative = deltaError / PIDTimerIndir.time();
+
+        pidGainsIndir.p = pidCoeffsIndir.p * error;
+        pidGainsIndir.i = pidCoeffsIndir.i * integralDir;
+        pidGainsIndir.d = pidCoeffsIndir.d * derivative;
+
+        viper_indirect.setVelocity(targetVelocity + pidGainsIndir.p + pidGainsIndir.i + pidGainsIndir.d);
+
+        lastErrorDir = error;
     }
 
 
