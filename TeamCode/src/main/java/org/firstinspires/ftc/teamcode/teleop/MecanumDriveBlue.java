@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,6 +13,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "BlueTeleOp", group = "TeleOp")
 public class MecanumDriveBlue extends OpMode {
+    FtcDashboard ftcdashboard;
+
     private boolean viperextended = false;
 
     private double directPower = 0;
@@ -22,30 +25,26 @@ public class MecanumDriveBlue extends OpMode {
     private DcMotorEx left_back;
     private DcMotorEx viper_direct = null;
     private DcMotorEx viper_indirect = null;
-
     private DcMotorEx carousel;
-
     private DcMotorEx intake_spinner;
-    private Servo intake_transfer;
     private DcMotorEx viper;
+    private Servo intake_transfer;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
-    private double encoderViper = 97.8029862845;
+    private double encoderViper = 294;
 
     public boolean xAxisLockLoop = false;
     public boolean yAxisLockLoop = false;
 
-    static double speed = 50;
+    private final double speed = 1500;
 
     public static PIDCoefficients pidCoeffsDir = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGainsDir = new PIDCoefficients(0, 0, 0);
-
     ElapsedTime PIDTimerDir = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     public static PIDCoefficients pidCoeffsIndir = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGainsIndir = new PIDCoefficients(0, 0, 0);
-
     ElapsedTime PIDTimerIndir = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
 
@@ -61,12 +60,19 @@ public class MecanumDriveBlue extends OpMode {
 
         intake_spinner = hardwareMap.get(DcMotorEx.class, "intake_spinner");
         intake_transfer = hardwareMap.get(Servo.class, "intake_transfer");
-        viper = hardwareMap.get(DcMotorEx.class, "viper");
+        viper_direct = hardwareMap.get(DcMotorEx.class, "viper_direct");
+        viper_indirect = hardwareMap.get(DcMotorEx.class, "viper_indirect");
 
+
+
+
+
+        viper_direct.setDirection(DcMotorEx.Direction.REVERSE);
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
         right_back.setDirection(DcMotorEx.Direction.REVERSE);
         left_front.setDirection(DcMotorEx.Direction.REVERSE);
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
+        viper_indirect.setDirection(DcMotorEx.Direction.FORWARD);
 
         carousel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
@@ -78,7 +84,8 @@ public class MecanumDriveBlue extends OpMode {
         right_front.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        viper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        viper_direct.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        viper_indirect.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
     }
 
@@ -112,6 +119,7 @@ public class MecanumDriveBlue extends OpMode {
      */
     @Override
     public void loop() {
+        boolean viperExtend = gamepad2.dpad_up;
         if (gamepad1.dpad_right == true) {
             if (yAxisLockLoop == true) {
                 telemetry.addData("Error: ", "Please disengage the Y-Axis lock!");
@@ -176,22 +184,18 @@ public class MecanumDriveBlue extends OpMode {
         intake_spinner.setPower(intakePower);
 
 
-        /*if (viperExtend == true) {
-            viper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            viper.setTargetPosition((int) encoderViper);
-            viper.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            viper.setVelocity(12);
+        if (viperExtend == true) {
+            viper_extend();
+            viperextended = true;
+        }
 
-            while (viper.isBusy()) {
-
-            }
-
-            viper.setPower(0);
-        }*/
+        if (viperExtend == false && viperextended == true) {
+            viper_lower();
+            viperextended = false;
+        }
 
         if (gamepad2.right_bumper == true) {
             carousel.setPower(0.23);
-
         }
 
         if (gamepad2.right_bumper == false) {
@@ -208,12 +212,9 @@ public class MecanumDriveBlue extends OpMode {
 
         if (gamepad2.a == true) {
             intake_transfer.setPosition(1);
-
         }
 
         if (gamepad2.b == true) {
-            telemetry.addData("Activated", "no");
-            telemetry.update();
             intake_transfer.setPosition(0);
         }
 
@@ -233,8 +234,8 @@ public class MecanumDriveBlue extends OpMode {
         viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        viper_direct.setTargetPosition(100);
-        viper_indirect.setTargetPosition(100);
+        viper_direct.setTargetPosition(1569);
+        viper_indirect.setTargetPosition(1569);
 
         viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -246,6 +247,11 @@ public class MecanumDriveBlue extends OpMode {
             PIDdirect(speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
+
+            telemetry.addData("Direct: ", viper_direct.getVelocity());
+            telemetry.addData("Indirect: ", viper_indirect.getVelocity());
+            telemetry.update();
+
         }
 
         viper_direct.setPower(0);
@@ -254,20 +260,20 @@ public class MecanumDriveBlue extends OpMode {
     }
 
     public void viper_lower() {
-        viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        /*viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);*/
 
-        viper_direct.setTargetPosition(-100);
-        viper_indirect.setTargetPosition(-100);
+        viper_direct.setTargetPosition(-10);
+        viper_indirect.setTargetPosition(-10);
 
         viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        viper_direct.setVelocity(speed);
-        viper_indirect.setVelocity(speed);
+        viper_direct.setVelocity(-speed);
+        viper_indirect.setVelocity(-speed);
 
         while (viper_direct.isBusy() && viper_indirect.isBusy()) {
-            PIDdirect(speed);
+            PIDdirect(-speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
         }
