@@ -1,7 +1,10 @@
 
 package org.firstinspires.ftc.teamcode.tests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,12 +13,14 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="ViperTest",group="Tests")
-public class ViperTest extends OpMode {
+@Autonomous(name="ViperTest",group="Tests")
+public class ViperTest extends LinearOpMode {
     private DcMotorEx viper_direct = null;
     private DcMotorEx viper_indirect = null;
 
-    static double speed = 50;
+    FtcDashboard ftcdashboard;
+
+    private final double speed = 1500;
 
     public static PIDCoefficients pidCoeffsDir = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGainsDir = new PIDCoefficients(0, 0, 0);
@@ -28,7 +33,7 @@ public class ViperTest extends OpMode {
     ElapsedTime PIDTimerIndir = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     private boolean viperextended = false;
-    private double encoderConstant = 89.1267682333;
+    private double encoderConstant = 294;
 
     private double directPower = 0;
 
@@ -36,67 +41,37 @@ public class ViperTest extends OpMode {
      * Code to run ONCE when the driver hits INIT
      */
     @Override
-    public void init() {
+    public void runOpMode() {
         viper_direct = hardwareMap.get(DcMotorEx.class, "viper_direct");
         viper_indirect = hardwareMap.get(DcMotorEx.class, "viper_indirect");
+
+        viper_direct.setDirection(DcMotorEx.Direction.REVERSE);
+        viper_indirect.setDirection(DcMotorEx.Direction.FORWARD);
 
         viper_direct.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-    }
+        // run until the end of the match (driver presses STOP)
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
-        boolean viperactive = gamepad2.b;
-
-        if (viperactive == true) {
+        waitForStart();
+        if (opModeIsActive()) {
             viper_extend();
-
-            viperextended = true;
-        }
-
-        if (viperactive == false) {
-            if (viperextended == true) {
-                viper_lower();
-
-                viperextended = false;
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                telemetry.addData("Error: ", e);
+                telemetry.update();
             }
+            viper_lower();
         }
-
-    }
-
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
-
-    }
-
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
-
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
-    }
+        }
 
     public void viper_extend() {
         viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        viper_direct.setTargetPosition(100);
-        viper_indirect.setTargetPosition(100);
+        viper_direct.setTargetPosition(1569);
+        viper_indirect.setTargetPosition(1569);
 
         viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -108,6 +83,11 @@ public class ViperTest extends OpMode {
             PIDdirect(speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
+
+            telemetry.addData("Direct: ", viper_direct.getVelocity());
+            telemetry.addData("Indirect: ", viper_indirect.getVelocity());
+            telemetry.update();
+
         }
 
         viper_direct.setPower(0);
@@ -116,20 +96,20 @@ public class ViperTest extends OpMode {
     }
 
     public void viper_lower() {
-        viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        /*viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);*/
 
-        viper_direct.setTargetPosition(-100);
-        viper_indirect.setTargetPosition(-100);
+        viper_direct.setTargetPosition(-10);
+        viper_indirect.setTargetPosition(-10);
 
         viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        viper_direct.setVelocity(speed);
-        viper_indirect.setVelocity(speed);
+        viper_direct.setVelocity(-speed);
+        viper_indirect.setVelocity(-speed);
 
         while (viper_direct.isBusy() && viper_indirect.isBusy()) {
-            PIDdirect(speed);
+            PIDdirect(-speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
         }
