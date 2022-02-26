@@ -7,8 +7,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "BlueTeleOp", group = "TeleOp")
@@ -27,7 +29,7 @@ public class MecanumDriveBlue extends OpMode {
     private DcMotorEx viper_indirect = null;
     private DcMotorEx carousel;
     private DcMotorEx intake_spinner;
-    private DcMotorEx viper;
+    private DigitalChannel intake_touch;
     private Servo intake_transfer;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
@@ -57,20 +59,17 @@ public class MecanumDriveBlue extends OpMode {
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         left_back = hardwareMap.get(DcMotorEx.class, "left_back");
         carousel = hardwareMap.get(DcMotorEx.class, "carousel");
+        intake_touch = hardwareMap.get(DigitalChannel.class, "intake_touch");
 
         intake_spinner = hardwareMap.get(DcMotorEx.class, "intake_spinner");
         intake_transfer = hardwareMap.get(Servo.class, "intake_transfer");
         viper_direct = hardwareMap.get(DcMotorEx.class, "viper_direct");
         viper_indirect = hardwareMap.get(DcMotorEx.class, "viper_indirect");
 
-
-
-
-
         viper_direct.setDirection(DcMotorEx.Direction.REVERSE);
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
         right_back.setDirection(DcMotorEx.Direction.REVERSE);
-        left_front.setDirection(DcMotorEx.Direction.REVERSE);
+        left_front.setDirection(DcMotorEx.Direction.FORWARD);
         left_back.setDirection(DcMotorEx.Direction.FORWARD);
         viper_indirect.setDirection(DcMotorEx.Direction.FORWARD);
 
@@ -109,7 +108,7 @@ public class MecanumDriveBlue extends OpMode {
         right_back.setPower(0);
         carousel.setPower(0);
 
-        intake_transfer.setPosition(0);
+        //intake_transfer.setPosition(0);
 
 
     }
@@ -136,7 +135,7 @@ public class MecanumDriveBlue extends OpMode {
 
         if (gamepad1.dpad_up == true) {
             if (xAxisLockLoop == true) {
-                telemetry .addData("Error: ", "Please disengage the X-Axis lock!");
+                telemetry.addData("Error: ", "Please disengage the X-Axis lock!");
                 telemetry.update();
             } else if (xAxisLockLoop == false) {
                 yAxisLockLoop = true;
@@ -151,7 +150,7 @@ public class MecanumDriveBlue extends OpMode {
 
 
         double lx = gamepad1.left_stick_x;
-        double ly = -gamepad1.left_stick_y;
+        double ly = gamepad1.left_stick_y;
         double rx = gamepad1.right_stick_x;
 
         double intakePower = gamepad2.left_stick_y;
@@ -176,26 +175,25 @@ public class MecanumDriveBlue extends OpMode {
         double right_front_power = (ly - lx + rx) / denominator;
         double right_back_power = (ly + lx + rx) / denominator;
 
-        left_front.setPower(-1 * (0.15 * left_front_power));
+        left_front.setPower(0.15 * left_front_power);
         left_back.setPower(0.15 * left_back_power);
         right_front.setPower(0.15 * right_front_power);
         right_back.setPower(0.15 * right_back_power);
 
         intake_spinner.setPower(intakePower);
 
-
-        if (viperExtend == true) {
+        if (gamepad2.dpad_up == true) {
             viper_extend();
             viperextended = true;
         }
 
-        if (viperExtend == false && viperextended == true) {
+        if (gamepad2.dpad_down == true && viperextended == true) {
             viper_lower();
             viperextended = false;
         }
 
         if (gamepad2.right_bumper == true) {
-            carousel.setPower(0.23);
+            carousel.setPower(0.7);
         }
 
         if (gamepad2.right_bumper == false) {
@@ -203,7 +201,7 @@ public class MecanumDriveBlue extends OpMode {
         }
 
         if (gamepad2.left_bumper == true) {
-            carousel.setPower(-0.23);
+            carousel.setPower(-0.7);
         }
 
         if (gamepad2.left_bumper == false) {
@@ -217,6 +215,17 @@ public class MecanumDriveBlue extends OpMode {
         if (gamepad2.b == true) {
             intake_transfer.setPosition(0);
         }
+
+        /*if (intakePower > 0) {
+            if (intake_touch.getState() == true) {
+                gamepad1.rumble(500);
+                gamepad2.rumble(500);
+           `     intake_spinner.setPower(0);
+            } else if (intake_touch.getState() == false) {
+                intake_spinner.setPower(intakePower);
+            }
+
+        }*/
 
         telemetry.addData("Runtime: ", runtime.toString());
         telemetry.update();
@@ -233,11 +242,16 @@ public class MecanumDriveBlue extends OpMode {
     public void viper_extend() {
         viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
+        telemetry.addData("Viper: ", "extend");
+        telemetry.update();
         if ((viper_direct.getCurrentPosition() > 1569 || viper_indirect.getCurrentPosition() > 1569) || gamepad1.dpad_up == false) {
+            telemetry.addData("Nope: ", "nada");
+            telemetry.update();
             viper_direct.setPower(0);
             viper_indirect.setPower(0);
         } else if ((viper_direct.getCurrentPosition() <= 1569 || viper_indirect.getCurrentPosition() <= 1569) && gamepad1.dpad_up == true) {
+            telemetry.addData("Yep yep: ", "extend");
+            telemetry.update();
             PIDdirect(speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);

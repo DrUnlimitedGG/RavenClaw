@@ -27,8 +27,7 @@ public class MecanumDriveRed extends OpMode {
     private DcMotorEx viper_indirect = null;
     private DcMotorEx carousel;
     private DcMotorEx intake_spinner;
-    private DcMotorEx viper;
-    private Servo intake_transfer;
+    //private Servo intake_transfer;
 
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
@@ -59,13 +58,9 @@ public class MecanumDriveRed extends OpMode {
         carousel = hardwareMap.get(DcMotorEx.class, "carousel");
 
         intake_spinner = hardwareMap.get(DcMotorEx.class, "intake_spinner");
-        intake_transfer = hardwareMap.get(Servo.class, "intake_transfer");
+        //intake_transfer = hardwareMap.get(Servo.class, "intake_transfer");
         viper_direct = hardwareMap.get(DcMotorEx.class, "viper_direct");
         viper_indirect = hardwareMap.get(DcMotorEx.class, "viper_indirect");
-
-
-
-
 
         viper_direct.setDirection(DcMotorEx.Direction.REVERSE);
         right_front.setDirection(DcMotorEx.Direction.REVERSE);
@@ -109,7 +104,7 @@ public class MecanumDriveRed extends OpMode {
         right_back.setPower(0);
         carousel.setPower(0);
 
-        intake_transfer.setPosition(0);
+        //intake_transfer.setPosition(0);
 
 
     }
@@ -181,7 +176,7 @@ public class MecanumDriveRed extends OpMode {
         right_front.setPower(0.15 * right_front_power);
         right_back.setPower(0.15 * right_back_power);
 
-        intake_spinner.setPower(intakePower);
+
 
 
         if (viperExtend == true) {
@@ -195,7 +190,7 @@ public class MecanumDriveRed extends OpMode {
         }
 
         if (gamepad2.right_bumper == true) {
-            carousel.setPower(-0.23);
+            carousel.setPower(-0.7);
         }
 
         if (gamepad2.right_bumper == false) {
@@ -203,20 +198,20 @@ public class MecanumDriveRed extends OpMode {
         }
 
         if (gamepad2.left_bumper == true) {
-            carousel.setPower(0.23);
+            carousel.setPower(0.7);
         }
 
         if (gamepad2.left_bumper == false) {
             carousel.setPower(0);
         }
 
-        if (gamepad2.a == true) {
+        /*if (gamepad2.a == true) {
             intake_transfer.setPosition(1);
         }
 
         if (gamepad2.b == true) {
             intake_transfer.setPosition(0);
-        }
+        }*/
 
         telemetry.addData("Runtime: ", runtime.toString());
         telemetry.update();
@@ -234,28 +229,16 @@ public class MecanumDriveRed extends OpMode {
         viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        viper_direct.setTargetPosition(1569);
-        viper_indirect.setTargetPosition(1569);
-
-        viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        viper_direct.setVelocity(speed);
-        viper_indirect.setVelocity(speed);
-
-        while (viper_direct.isBusy() && viper_indirect.isBusy()) {
+        if ((viper_direct.getCurrentPosition() > 1569 || viper_indirect.getCurrentPosition() > 1569) || gamepad1.dpad_up == false) {
+            viper_direct.setPower(0);
+            viper_indirect.setPower(0);
+        } else if ((viper_direct.getCurrentPosition() <= 1569 || viper_indirect.getCurrentPosition() <= 1569) && gamepad1.dpad_up == true) {
             PIDdirect(speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
 
-            telemetry.addData("Direct: ", viper_direct.getVelocity());
-            telemetry.addData("Indirect: ", viper_indirect.getVelocity());
-            telemetry.update();
-
         }
 
-        viper_direct.setPower(0);
-        viper_indirect.setPower(0);
 
     }
 
@@ -263,23 +246,15 @@ public class MecanumDriveRed extends OpMode {
         /*viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);*/
 
-        viper_direct.setTargetPosition(-10);
-        viper_indirect.setTargetPosition(-10);
-
-        viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        viper_direct.setVelocity(-speed);
-        viper_indirect.setVelocity(-speed);
-
-        while (viper_direct.isBusy() && viper_indirect.isBusy()) {
+        if ((viper_direct.getCurrentPosition() < -10 || viper_indirect.getCurrentPosition() < -10) || gamepad1.dpad_up == false) {
+            viper_direct.setPower(0);
+            viper_indirect.setPower(0);
+        } else if ((viper_direct.getCurrentPosition() >= -10 || viper_indirect.getCurrentPosition() >= -10) && gamepad1.dpad_up == true) {
             PIDdirect(-speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
-        }
 
-        viper_direct.setPower(0);
-        viper_indirect.setPower(0);
+        }
 
     }
 
