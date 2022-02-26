@@ -175,12 +175,13 @@ public class MecanumDriveRed extends OpMode {
         double right_front_power = (ly - lx + rx) / denominator;
         double right_back_power = (ly + lx + rx) / denominator;
 
-        left_front.setPower(0.5 * left_front_power);
-        left_back.setPower(0.5 * left_back_power);
-        right_front.setPower(0.5 * right_front_power);
-        right_back.setPower(0.5 * right_back_power);
+        left_front.setPower(-1 * (0.5 * left_front_power));
+        left_back.setPower(-1 * (0.5 * left_back_power));
+        right_front.setPower(-1 * (0.5 * right_front_power));
+        right_back.setPower(-1 * (0.5 * right_back_power));
 
-        intake_spinner.setPower(0.55 * intakePower);
+
+        intake_spinner.setPower(intakePower);
 
         if (gamepad2.dpad_up == true) {
             viper_extend();
