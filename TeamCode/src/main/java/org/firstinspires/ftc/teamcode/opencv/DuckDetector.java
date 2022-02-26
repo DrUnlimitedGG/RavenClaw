@@ -6,6 +6,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
@@ -30,18 +31,18 @@ public class DuckDetector extends OpenCvPipeline {
     static final Rect RIGHT_ROI = new Rect(
             new Point(230, 75),
             new Point(290, 115));
-    static double PERCENT_COLOR_THRESHOLD = 0.03;
+    static double PERCENT_COLOR_THRESHOLD = 0.2;
 
     public DuckDetector(Telemetry t) { telemetry = t; }
 
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(140, 50, 69);
-        Scalar highHSV = new Scalar(160, 255, 255);
-
+        Scalar lowHSV = new Scalar(120, 25, 25); //10, 50, 69
+        Scalar highHSV = new Scalar(170, 255, 255); //20, 255, 255
+        Imgproc.GaussianBlur(mat, mat, new Size(5, 5), 0);
         Core.inRange(mat, lowHSV, highHSV, mat);
-
+        //troll
         Mat left = mat.submat(LEFT_ROI);
         Mat right = mat.submat(RIGHT_ROI);
         Mat middle = mat.submat(MIDDLE_ROI);
