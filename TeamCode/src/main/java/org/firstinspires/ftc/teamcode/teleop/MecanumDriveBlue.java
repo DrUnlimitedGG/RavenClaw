@@ -234,28 +234,16 @@ public class MecanumDriveBlue extends OpMode {
         viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        viper_direct.setTargetPosition(1569);
-        viper_indirect.setTargetPosition(1569);
-
-        viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        viper_direct.setVelocity(speed);
-        viper_indirect.setVelocity(speed);
-
-        while (viper_direct.isBusy() && viper_indirect.isBusy()) {
+        if ((viper_direct.getCurrentPosition() > 1569 || viper_indirect.getCurrentPosition() > 1569) || gamepad1.dpad_up == false) {
+            viper_direct.setPower(0);
+            viper_indirect.setPower(0);
+        } else if ((viper_direct.getCurrentPosition() <= 1569 || viper_indirect.getCurrentPosition() <= 1569) && gamepad1.dpad_up == true) {
             PIDdirect(speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
 
-            telemetry.addData("Direct: ", viper_direct.getVelocity());
-            telemetry.addData("Indirect: ", viper_indirect.getVelocity());
-            telemetry.update();
-
         }
 
-        viper_direct.setPower(0);
-        viper_indirect.setPower(0);
 
     }
 
@@ -263,23 +251,15 @@ public class MecanumDriveBlue extends OpMode {
         /*viper_direct.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         viper_indirect.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);*/
 
-        viper_direct.setTargetPosition(-10);
-        viper_indirect.setTargetPosition(-10);
-
-        viper_direct.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        viper_indirect.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        viper_direct.setVelocity(-speed);
-        viper_indirect.setVelocity(-speed);
-
-        while (viper_direct.isBusy() && viper_indirect.isBusy()) {
+        if ((viper_direct.getCurrentPosition() < -10 || viper_indirect.getCurrentPosition() < -10) || gamepad1.dpad_up == false) {
+            viper_direct.setPower(0);
+            viper_indirect.setPower(0);
+        } else if ((viper_direct.getCurrentPosition() >= -10 || viper_indirect.getCurrentPosition() >= -10) && gamepad1.dpad_up == true) {
             PIDdirect(-speed);
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
-        }
 
-        viper_direct.setPower(0);
-        viper_indirect.setPower(0);
+        }
 
     }
 
