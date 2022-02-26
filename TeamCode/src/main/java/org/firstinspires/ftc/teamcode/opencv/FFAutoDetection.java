@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opencv;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -11,13 +12,13 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 @Autonomous(name = "Detection", group = "Autonomous")
 public class FFAutoDetection extends LinearOpMode{
     OpenCvCamera webCam;
+    WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam");
     @Override
     public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
-        webCam = OpenCvCameraFactory.getInstance()
-                .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         DuckDetector detector = new DuckDetector(telemetry);
         webCam.setPipeline(detector);
         webCam.openCameraDeviceAsync(
