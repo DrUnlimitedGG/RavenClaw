@@ -12,9 +12,10 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 @Autonomous(name = "Detection", group = "Autonomous")
 public class FFAutoDetection extends LinearOpMode{
     OpenCvCamera webCam;
-    WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam");
+    WebcamName webcamName;
     @Override
     public void runOpMode() throws InterruptedException {
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam");
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
@@ -25,7 +26,7 @@ public class FFAutoDetection extends LinearOpMode{
                 new OpenCvCamera.AsyncCameraOpenListener() {
                     @Override
                     public void onOpened() {
-                        webCam.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                        webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
                     }
 
                     @Override
