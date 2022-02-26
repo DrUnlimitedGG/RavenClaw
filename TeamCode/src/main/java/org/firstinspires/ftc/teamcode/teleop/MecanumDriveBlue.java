@@ -32,6 +32,8 @@ public class MecanumDriveBlue extends OpMode {
     private DigitalChannel intake_touch;
     private Servo intake_transfer;
 
+    private int servoAmount = 0;
+
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
     private double encoderViper = 294;
@@ -188,6 +190,8 @@ public class MecanumDriveBlue extends OpMode {
         }
 
         if (gamepad2.dpad_down == true) {
+            telemetry.addData("Vipers: ", "Retracting!");
+            telemetry.update();
             viper_lower();
             //viperextended = false;
         }
@@ -210,7 +214,7 @@ public class MecanumDriveBlue extends OpMode {
 
         if (gamepad2.a == true) {
             intake_transfer.setPosition(1);
-        }
+            }
 
         if (gamepad2.b == true) {
             intake_transfer.setPosition(0);
@@ -280,6 +284,8 @@ public class MecanumDriveBlue extends OpMode {
 
         viper_direct.setVelocity(-speed);
         viper_indirect.setVelocity(-speed);
+        telemetry.addData("Function: ", "Retracting ran!");
+        telemetry.update();
 
         while (viper_direct.isBusy() && viper_indirect.isBusy()) {
             PIDdirect(-speed);

@@ -32,6 +32,8 @@ public class MecanumDriveRed extends OpMode {
     private DigitalChannel intake_touch;
     private Servo intake_transfer;
 
+    private int servoAmount = 0;
+
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
     private double encoderConstant = 89.1267682333;
     private double encoderViper = 294;
@@ -48,6 +50,12 @@ public class MecanumDriveRed extends OpMode {
     public static PIDCoefficients pidCoeffsIndir = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGainsIndir = new PIDCoefficients(0, 0, 0);
     ElapsedTime PIDTimerIndir = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+
+    boolean currentA  = false;
+    boolean LastA = false;
+    boolean flagA = false;
+    double ServoPos = 0;
 
 
     @Override
@@ -175,13 +183,12 @@ public class MecanumDriveRed extends OpMode {
         double right_front_power = (ly - lx + rx) / denominator;
         double right_back_power = (ly + lx + rx) / denominator;
 
-        left_front.setPower(-1 * (0.5 * left_front_power));
-        left_back.setPower(-1 * (0.5 * left_back_power));
-        right_front.setPower(-1 * (0.5 * right_front_power));
-        right_back.setPower(-1 * (0.5 * right_back_power));
+        left_front.setPower(0.5 * left_front_power);
+        left_back.setPower(0.5 * left_back_power);
+        right_front.setPower(0.5 * right_front_power);
+        right_back.setPower(0.5 * right_back_power);
 
-
-        intake_spinner.setPower(intakePower);
+        intake_spinner.setPower(0.55 * intakePower);
 
         if (gamepad2.dpad_up == true) {
             viper_extend();
@@ -189,9 +196,28 @@ public class MecanumDriveRed extends OpMode {
         }
 
         if (gamepad2.dpad_down == true) {
+            telemetry.addData("Vipers: ", "Retracting!");
+            telemetry.update();
             viper_lower();
             //viperextended = false;
         }
+
+
+        if(gamepad2.a == true){
+            ServoPos = 0.25;
+        }
+
+        if(gamepad2.b == true){
+            ServoPos = 0.7;
+        }
+
+        if(gamepad2.x == true){
+            ServoPos = 0;
+        }
+
+
+        intake_transfer.setPosition(ServoPos);
+
 
         if (gamepad2.right_bumper == true) {
             carousel.setPower(-0.6);
@@ -209,13 +235,13 @@ public class MecanumDriveRed extends OpMode {
             carousel.setPower(0);
         }
 
-        if (gamepad2.a == true) {
-            intake_transfer.setPosition(1);
-        }
+        //if (gamepad2.a == true) {
+        //    intake_transfer.setPosition(1);
+        //}
 
-        if (gamepad2.b == true) {
-            intake_transfer.setPosition(0);
-        }
+        //if (gamepad2.b == true) {
+        //    intake_transfer.setPosition(0);
+        //}
 
         /*if (intakePower > 0) {
             if (intake_touch.getState() == true) {
@@ -281,6 +307,8 @@ public class MecanumDriveRed extends OpMode {
 
         viper_direct.setVelocity(-speed);
         viper_indirect.setVelocity(-speed);
+        telemetry.addData("Function: ", "Retracting ran!");
+        telemetry.update();
 
         while (viper_direct.isBusy() && viper_indirect.isBusy()) {
             PIDdirect(-speed);
