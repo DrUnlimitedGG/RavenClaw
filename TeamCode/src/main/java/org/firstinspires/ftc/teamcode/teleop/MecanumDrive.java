@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "RedTeleOp", group = "TeleOp")
-public class MecanumDriveRed extends OpMode {
+@TeleOp(name = "TeleOp", group = "TeleOp")
+public class MecanumDrive extends OpMode {
     FtcDashboard ftcdashboard;
 
     private boolean viperextended = false;
@@ -50,12 +50,6 @@ public class MecanumDriveRed extends OpMode {
     public static PIDCoefficients pidCoeffsIndir = new PIDCoefficients(0, 0, 0);
     public PIDCoefficients pidGainsIndir = new PIDCoefficients(0, 0, 0);
     ElapsedTime PIDTimerIndir = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-
-
-    boolean currentA  = false;
-    boolean LastA = false;
-    boolean flagA = false;
-    double ServoPos = 0;
 
 
     @Override
@@ -127,6 +121,7 @@ public class MecanumDriveRed extends OpMode {
     @Override
     public void loop() {
         boolean viperExtend = gamepad2.dpad_up;
+
         if (gamepad1.dpad_right == true) {
             if (yAxisLockLoop == true) {
                 telemetry.addData("Error: ", "Please disengage the Y-Axis lock!");
@@ -202,25 +197,8 @@ public class MecanumDriveRed extends OpMode {
             //viperextended = false;
         }
 
-
-        if(gamepad2.a == true){
-            ServoPos = 0.25;
-        }
-
-        if(gamepad2.b == true){
-            ServoPos = 0.7;
-        }
-
-        if(gamepad2.x == true){
-            ServoPos = 0;
-        }
-
-
-        intake_transfer.setPosition(ServoPos);
-
-
         if (gamepad2.right_bumper == true) {
-            carousel.setPower(-0.6);
+            carousel.setPower(0.6);
         }
 
         if (gamepad2.right_bumper == false) {
@@ -228,20 +206,24 @@ public class MecanumDriveRed extends OpMode {
         }
 
         if (gamepad2.left_bumper == true) {
-            carousel.setPower(0.6);
+            carousel.setPower(-0.6);
         }
 
         if (gamepad2.left_bumper == false) {
             carousel.setPower(0);
         }
 
-        //if (gamepad2.a == true) {
-        //    intake_transfer.setPosition(1);
-        //}
+        if (gamepad1.a == true) {
+            intake_transfer.setPosition(0);
+        }
 
-        //if (gamepad2.b == true) {
-        //    intake_transfer.setPosition(0);
-        //}
+        if (gamepad1.y == true) {
+            intake_transfer.setPosition(1);
+        }
+
+        if (gamepad1.b == true) {
+            intake_transfer.setPosition(0.395);
+        }
 
         /*if (intakePower > 0) {
             if (intake_touch.getState() == true) {

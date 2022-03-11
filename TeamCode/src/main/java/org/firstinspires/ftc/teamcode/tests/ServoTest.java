@@ -52,7 +52,7 @@ public class ServoTest extends OpMode
      */
     @Override
     public void init() {
-        servo1 = hardwareMap.get(Servo.class, "servo");
+        servo1 = hardwareMap.get(Servo.class, "intake_transfer");
     }
 
     /*
@@ -75,12 +75,16 @@ public class ServoTest extends OpMode
      */
     @Override
     public void loop() {
-        if (gamepad1.right_bumper == true) {
-                servo1.setPosition(10);
+        if (gamepad1.a == true) {
+                servo1.setPosition(0);
             }
 
-        if (gamepad1.left_bumper == true) {
-            servo1.setPosition(-10);
+        if (gamepad1.y == true) {
+            servo1.setPosition(1);
+        }
+
+        if (gamepad1.b == true) {
+            servo1.setPosition(0.395);
         }
 
         telemetry.addData("Status", "Run Time: " + runtime.toString());

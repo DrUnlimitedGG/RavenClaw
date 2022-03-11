@@ -10,13 +10,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@Autonomous(name="ViperTest",group="Tests")
-public class ViperTest extends LinearOpMode {
+@TeleOp(name="IntakeTest",group="Tests")
+public class IntakeTest extends LinearOpMode {
     private DcMotorEx viper_direct = null;
     private DcMotorEx viper_indirect = null;
+    private Servo servo1;
+    public DcMotorEx intake_spinner;
 
     FtcDashboard ftcdashboard;
 
@@ -44,6 +47,8 @@ public class ViperTest extends LinearOpMode {
     public void runOpMode() {
         viper_direct = hardwareMap.get(DcMotorEx.class, "viper_direct");
         viper_indirect = hardwareMap.get(DcMotorEx.class, "viper_indirect");
+        servo1 = hardwareMap.get(Servo.class, "intake_transfer");
+        intake_spinner = hardwareMap.get(DcMotorEx.class, "intake_spinner");
 
         viper_direct.setDirection(DcMotorEx.Direction.REVERSE);
         viper_indirect.setDirection(DcMotorEx.Direction.FORWARD);
@@ -55,14 +60,41 @@ public class ViperTest extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()) {
-            viper_extend();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                telemetry.addData("Error: ", e);
-                telemetry.update();
+            servo1.setPosition(0.1);
+        }
+
+        while (opModeIsActive()) {
+            double intakePower = gamepad1.left_stick_y;
+
+            intake_spinner.setPower(0.775 * intakePower);
+
+            if (gamepad1.dpad_up) {
+                viper_extend();
+                telemetry.addData("Viper: ", "Extended");
+
             }
-            viper_lower();
+
+            if (gamepad1.dpad_down) {
+                viper_lower();
+                telemetry.addData("Viper: ", "Retracted");
+            }
+
+            if (gamepad1.a == true) {
+                servo1.setPosition(0.15);
+                telemetry.addData("Servo Position: ", servo1.getPosition());
+            }
+
+            if (gamepad1.y == true) {
+                servo1.setPosition(1);
+                telemetry.addData("Servo Position: ", servo1.getPosition());
+
+            }
+
+            if (gamepad1.b == true) {
+                servo1.setPosition(0.395);
+                telemetry.addData("Servo Position: ", servo1.getPosition());
+
+            }
         }
         }
 
