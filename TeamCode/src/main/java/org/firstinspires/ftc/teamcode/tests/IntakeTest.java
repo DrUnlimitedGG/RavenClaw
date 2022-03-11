@@ -65,18 +65,28 @@ public class IntakeTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             double intakePower = gamepad1.left_stick_y;
-
             intake_spinner.setPower(0.775 * intakePower);
+
+            double viperPower = -0.5 * gamepad1.right_stick_y;
+            if (viper_direct.getCurrentPosition() >= 1599 || viper_indirect.getCurrentPosition() >= 1599) {
+                if (viperPower >= -0.1) {
+                    viper_direct.setPower(0);
+                    viper_indirect.setPower(0);
+                } else if (viperPower < -0.1){
+                    viper_direct.setPower(viperPower);
+                    viper_indirect.setPower(viperPower);
+                }
+            } else {
+                viper_direct.setPower(viperPower);
+                viper_indirect.setPower(viperPower);
+            }
 
             if (gamepad1.dpad_up) {
                 viper_extend();
-                telemetry.addData("Viper: ", "Extended");
-
             }
 
             if (gamepad1.dpad_down) {
                 viper_lower();
-                telemetry.addData("Viper: ", "Retracted");
             }
 
             if (gamepad1.a == true) {
@@ -95,7 +105,12 @@ public class IntakeTest extends LinearOpMode {
                 telemetry.addData("Servo Position: ", servo1.getPosition());
 
             }
+
+            telemetry.addData("Position: ", viper_direct.getCurrentPosition());
+            telemetry.update();
         }
+
+        servo1.setPosition(0.15);
         }
 
     public void viper_extend() {
@@ -116,9 +131,6 @@ public class IntakeTest extends LinearOpMode {
             directPower = viper_direct.getVelocity();
             PIDindirect(directPower);
 
-            telemetry.addData("Direct: ", viper_direct.getVelocity());
-            telemetry.addData("Indirect: ", viper_indirect.getVelocity());
-            telemetry.update();
 
         }
 
